@@ -10,7 +10,7 @@ izhaja iz igre **Space Impact**.
 - En igralec,
 - streljanje sovražnikov in umikanje njihovim napadom,
 - različni sovražniki z različnimi napadi,
-- različna orožja (rakete, laser, \dots) in začasne moči (počasnejši sovražniki, hitrejše streljanje, \dots),
+- različna orožja (rakete, laser, ...) in začasne moči (počasnejši sovražniki, hitrejše streljanje, ...),
 - zbiranje točk in vpogled prejšnje rezultate.
 
 
