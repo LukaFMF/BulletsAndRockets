@@ -14,13 +14,13 @@ izhaja iz igre **Space Impact**.
 - zbiranje točk in vpogled prejšnje rezultate.
 
 
-Terminski plan projekta
+# Terminski plan projekta
 1. teden: sestavljanje razredov in osnovna grafika (okno),
 2. teden: logika igre,
 3. teden: grafika,
 4. teden: zadnji popravki in izboljšave.
 
 
-Člani razvojne ekipe
+#Člani razvojne ekipe
 - Luka Toplak
 - Anže Ozimek
