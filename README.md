@@ -21,6 +21,6 @@ izhaja iz igre **Space Impact**.
 4. teden: zadnji popravki in izboljšave.
 
 
-#Člani razvojne ekipe
+# Člani razvojne ekipe
 - Luka Toplak
 - Anže Ozimek
