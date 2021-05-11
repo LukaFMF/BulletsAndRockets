@@ -1,22 +1,25 @@
-public class Game {
+public class Game 
+{
 	public static void main(String[] args) throws InterruptedException
 	{
 		Window win = new Window("Bullets & Rockets",1280,720);
 		win.setVisible(true);
 		
 		final long fps = 60;
-		final long frameDelay = (1/fps)*1_000_000_000;
+		final long frameDelay = (long)((1/(float)fps)*1e9);
+		Panel mainPanel = win.getMainPanel();
 		while(true)
 		{
 			final long startOfFrame = System.nanoTime();
 			
 			// draw here
-			win.repaint();
+			//win.repaint();
+			mainPanel.updateState();
+			mainPanel.repaint();
 			
 			final long endOfFrame = System.nanoTime();
-			
 			final long delayThisFrame = Math.max(frameDelay - (endOfFrame - startOfFrame),0l); 
-			Thread.sleep(0,(int)delayThisFrame);
+			Thread.sleep(delayThisFrame/(long)1e6,(int)(delayThisFrame % (long)(1e6)));
 		}
 	}
 }
