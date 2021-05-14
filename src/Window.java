@@ -2,6 +2,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,22 +14,32 @@ public class Window extends JFrame
 	private Panel panel;
 	Window(String name,int width,int height)
 	{
-		super();
-		this.setTitle(name);
+		super(name);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		this.setMinimumSize(new Dimension(width,height));
+		this.setSize(width,height);
+		this.validate();
 		this.setResizable(false);
-		this.setLayout(new BorderLayout());
+		this.setLocationRelativeTo(null);
+		
+		try
+		{
+			this.setIconImage(Loader.loadImage(".\\assets\\images\\winIcon.png",100,100));			
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
 
-		this.panel = new Panel();
-		this.add(this.panel,BorderLayout.CENTER);
+		this.panel = new Panel(width,height);
+		this.add(this.panel);
+		this.pack();
 		
 		this.addWindowFocusListener(new WindowFocusListener()
 		{
 		        @Override
 		        public void windowLostFocus(WindowEvent e)
 		        {
-		        	// ta funkcija poskrbi, da ob kliku iz okna, ne obdrzimo zadnjega vnosa s tipkovnices
+		        	// ta funkcija poskrbi, da ob kliku iz okna, ne obdrzimo zadnjega vnosa s tipkovnice
 		        	Map<Integer,Boolean> keyMap = panel.getKeyboard().getKeyMap();
 		        	Set<Integer> keys = keyMap.keySet();
 		        	

@@ -1,34 +1,18 @@
-public class Rect2D
+public class Rect2D extends Shape2D
 {
-	private Vec2D position;
 	private float width;
 	private float height;
 	
-	Rect2D(Vec2D v,float w,float h)
+	Rect2D(Vec2D origin,float width,float height)
 	{
-		this.position = v;
-		this.width = w;
-		this.height = h;
+		super(origin);
+		this.width = width;
+		this.height = height;
 	}
 	
-	Rect2D(float x,float y,float w,float h)
+	Rect2D(float x,float y,float width,float height)
 	{
-		this(new Vec2D(x,y),w,h);
-	}
-
-	public void translate(Vec2D v)
-	{
-		this.position.translate(v);
-	}
-	
-	public void translate(float x,float y)
-	{
-		this.position.translate(x,y);
-	}
-	
-	public Vec2D getPos()
-	{
-		return this.position;
+		this(new Vec2D(x,y),width,height);
 	}
 	
 	public float getWidth()
