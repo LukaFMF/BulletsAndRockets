@@ -48,12 +48,22 @@ public class Vec2D
 		final float norm = this.norm();
 		
 		this.x /= norm;
-		this.y /= norm; 
+		this.y /= norm;
 	}
 	
 	public boolean isZeroVec()
 	{
 		return Math.signum(this.x) == 0 && Math.signum(this.y) == 0; 
+	}
+	
+	public void scalarMul(float scalar)
+	{
+		this.x *= scalar;
+		this.y *= scalar;
+	}
+	public Vec2D clone()
+	{
+		return new Vec2D(this.x,this.y);
 	}
 	
 	public float getX() 

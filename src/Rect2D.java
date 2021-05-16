@@ -24,5 +24,20 @@ public class Rect2D extends Shape2D
 	{
 		return this.height;
 	}
+	
+	public void setWidth(float width)
+	{
+		this.width = width;
+	}
+	
+	public void setHeight(float height)
+	{
+		this.height = height;
+	}
+	
+	public Rect2D clone()
+	{
+		return new Rect2D(this.origin,this.width,this.height);
+	}
 }
 

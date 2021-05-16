@@ -13,6 +13,7 @@ public class Panel extends JPanel
 	private Background background;
 	private KeyboardControls keyboard;
 	
+	
 	Panel(int width,int height)
 	{
 		super();
@@ -21,7 +22,7 @@ public class Panel extends JPanel
 		this.panelHeight = height;
 		this.setPreferredSize(new Dimension(this.panelWidth,this.panelHeight));
 		
-		this.player = new Player(new Rect2D(50.f,300.f,100.f,150.f));
+		this.player = new Player(new Rect2D(50.f,300.f,100.f,150.f),this.panelWidth,this.panelHeight);
 		
 		this.keyboard = new KeyboardControls();
 		

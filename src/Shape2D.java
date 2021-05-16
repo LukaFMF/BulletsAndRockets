@@ -15,7 +15,7 @@ public abstract class Shape2D
 	
 	public void translate(Vec2D v)
 	{
-		this.origin.translate(v);
+		this.translate(v.getX(),v.getY());
 	}
 	
 	public void translate(float x,float y)

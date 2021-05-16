@@ -4,18 +4,29 @@ import java.awt.image.*;
 import javax.imageio.*;
 import java.io.*;
 import java.util.Map;
+import java.util.Vector;
 
 public class Player
 {
+	private int panelWidth; // le za informacijo o velikosti okna
+	private int panelHeight;
 	private Rect2D rect;
 	private Vec2D movementDirection;
 	private Vec2D hitboxLocation; // relativna lokacija hitbox-a glede na izhodisce this.rect 
 	private CircleHitbox hitbox;
+	private PlayerWeapon weapon;
 	private Image texture;
+	private Vector<PlayerBullet> bullets;
 	
-	Player(Rect2D rect) 
+	Player(Rect2D rect,int windowWidth,int windowHeight) 
 	{
+		this.panelWidth = windowWidth;
+		this.panelHeight = windowHeight;
+		this.bullets = new Vector<PlayerBullet>();
+		
 		this.rect = rect;
+		
+		this.weapon = new PlayerWeapon();
 		
 		this.movementDirection = new Vec2D(0.f,0.f);
 		
@@ -43,11 +54,25 @@ public class Player
 	
 	public void update(float deltaTime,KeyboardControls keyboard,int windowWidth,int windowHeight)
 	{
+		int i = 0;
+		while(i < this.bullets.size())
+		{
+			final PlayerBullet currBullet = this.bullets.get(i);
+			currBullet.update(deltaTime);
+			
+			if(currBullet.isOffscreen(this.panelWidth,this.panelHeight))
+				this.bullets.remove(i);
+			else
+				i++;
+		}
+		
+		this.weapon.update(deltaTime);
+		
 		final float pixelsPerMilli = .5f;
-		Map<Integer,Boolean> keyMap = keyboard.getKeyMap();
 		
 		this.movementDirection.zero();
 		
+		Map<Integer,Boolean> keyMap = keyboard.getKeyMap();
 		if(keyMap.get(KeyEvent.VK_UP))
 			this.movementDirection.translate(.0f,-1.f);
 		if(keyMap.get(KeyEvent.VK_DOWN))
@@ -56,6 +81,8 @@ public class Player
 			this.movementDirection.translate(-1.f,.0f);
 		if(keyMap.get(KeyEvent.VK_RIGHT))
 			this.movementDirection.translate(1.f,.0f);
+		if(keyMap.get(KeyEvent.VK_SPACE))
+			this.weapon.tryToShoot(this.rect,this.bullets);
 		
 		if(!this.movementDirection.isZeroVec())
 		{
@@ -66,7 +93,6 @@ public class Player
 			final float moveX = this.movementDirection.getX() * moveAmount;
 			final float moveY = this.movementDirection.getY() * moveAmount;
 			this.rect.translate(moveX,moveY);
-			//this.hitbox.getHitbox().translate(moveX,moveY);
 		}
 		
 		float rectX = this.rect.getOrigin().getX();
@@ -82,12 +108,15 @@ public class Player
 		
 		this.hitbox.getHitbox().getOrigin().setX(rectX);
 		this.hitbox.getHitbox().getOrigin().setY(rectY);
-		this.hitbox.getHitbox().translate(this.hitboxLocation);
+		this.hitbox.translate(this.hitboxLocation);
 	}
 	
 	public void draw(Graphics2D g)
 	{
-		Vec2D imagePos = rect.getOrigin();
+		for(PlayerBullet bullet : this.bullets)
+			bullet.draw(g);
+		
+		final Vec2D imagePos = rect.getOrigin();
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		this.hitbox.draw(g);
 	}

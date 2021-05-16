@@ -26,6 +26,16 @@ public class RectHitbox
 		return Collisions.CircleRect(o.getHitbox(),this.hitbox);
 	}
 	
+	public void translate(float x,float y)
+	{
+		this.hitbox.translate(x,y);
+	}
+	
+	public void translate(Vec2D v)
+	{
+		this.translate(v.getX(),v.getY());
+	}
+	
 	public Rect2D getHitbox()
 	{
 		return this.hitbox;
