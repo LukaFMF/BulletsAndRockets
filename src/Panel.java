@@ -27,6 +27,8 @@ public class Panel extends JPanel
 		this.keyboard = new KeyboardControls();
 		
 		this.background = new Background(".\\assets\\images\\background.png",this.panelWidth,this.panelHeight);
+		
+		
 	}
 	
 	public void updateState(float deltaTime) // cas v ms
