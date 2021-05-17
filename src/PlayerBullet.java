@@ -10,6 +10,11 @@ public class PlayerBullet extends Projectile
 		this.hitbox = new RectHitbox(this.rect.getOrigin(),this.rect.getWidth(),this.rect.getHeight());
 	}
 	
+	public RectHitbox getHitbox()
+	{
+		return this.hitbox;
+	}
+	
 	@Override
 	public void update(float deltaTime)
 	{

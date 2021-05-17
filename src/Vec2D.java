@@ -57,7 +57,7 @@ public class Vec2D
 	}
 	
 	public void scalarMul(float scalar)
-	{
+	{		
 		this.x *= scalar;
 		this.y *= scalar;
 	}
