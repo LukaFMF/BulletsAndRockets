@@ -3,6 +3,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.*;
 import javax.imageio.*;
 import java.io.*;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Vector;
 
@@ -16,13 +17,13 @@ public class Player
 	private CircleHitbox hitbox;
 	private PlayerWeapon weapon;
 	private Image texture;
-	private Vector<PlayerBullet> bullets;
+	private LinkedList<PlayerBullet> bullets;
 	
 	Player(Rect2D rect,int windowWidth,int windowHeight) 
 	{
 		this.panelWidth = windowWidth;
 		this.panelHeight = windowHeight;
-		this.bullets = new Vector<PlayerBullet>();
+		this.bullets = new LinkedList<PlayerBullet>();
 		
 		this.rect = rect;
 		
@@ -38,9 +39,9 @@ public class Player
 		final float rWidth = this.rect.getWidth();
 		final float rHeight = this.rect.getHeight();
 		
-		this.hitboxLocation = new Vec2D(rWidth/2,rHeight/2);
+		this.hitboxLocation = new Vec2D(rWidth/2 - 12,rHeight/2);
 		
-		this.hitbox = new CircleHitbox(rX + this.hitboxLocation.getX(),rY + this.hitboxLocation.getY(),10.f);
+		this.hitbox = new CircleHitbox(rX + this.hitboxLocation.getX(),rY + this.hitboxLocation.getY(),18.f);
 		
 		try
 		{

@@ -45,7 +45,7 @@ public class CircleHitbox
 		final float radius = this.hitbox.getRadius();
 		final float radiusX2 = 2*radius;
 		
-		g.setColor(Color.GREEN);
+		g.setColor(Color.BLUE);
 		g.setStroke(new BasicStroke(1.f));
 		g.drawOval((int)(origin.getX() - radius),(int)(origin.getY() - radius),(int)radiusX2,(int)radiusX2);
 	}

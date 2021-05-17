@@ -1,5 +1,6 @@
 import java.awt.Image;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Vector;
 
 public class PlayerWeapon
@@ -36,7 +37,7 @@ public class PlayerWeapon
 		timer += deltaTime;
 	}
 	
-	public void tryToShoot(Rect2D shipPosition,Vector<PlayerBullet> bullets) // funkcija modificira spremenljivko bullets
+	public void tryToShoot(Rect2D shipPosition,LinkedList<PlayerBullet> bullets) // funkcija modificira spremenljivko bullets
 	{
 		if(this.timer - this.lastShotAt > shootCooldown)
 		{
