@@ -27,9 +27,7 @@ public class CircleEnemy extends Enemy
 	{
 		return this.enemy.getOrigin().getY();
 	}
-	
-	
-	
+
 	@Override
 	public void update(float deltaTime) 
 	{

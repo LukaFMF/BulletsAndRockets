@@ -1,5 +1,7 @@
-import java.awt.Graphics2D;
-import java.awt.Image;
+
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class Enemy
 {
@@ -7,6 +9,7 @@ public abstract class Enemy
 	protected Image texture;
 	protected Vec2D endPoint;
 	protected Rect2D enemy;
+	protected List<EnemyBullet> bullets;
 	//protected ... trijectori;
 	
 	Enemy(float movespeed,Image texture ,Vec2D endPoint,Rect2D enemy)
@@ -15,6 +18,7 @@ public abstract class Enemy
 		this.texture = texture;
 		this.endPoint = endPoint;
 		this.enemy = enemy;
+		this.bullets = new LinkedList<EnemyBullet>();
 	}
 	public float getEndpointX()
 	{

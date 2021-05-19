@@ -46,10 +46,9 @@ public class RectEnemy extends Enemy
 		
 		movementdirection.scalarMul(konst);
 
-		
 		this.enemy.translate(movementdirection);
 		this.hitbox.translate(movementdirection);
-		
+	
 	}
 
 	@Override
