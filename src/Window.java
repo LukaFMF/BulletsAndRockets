@@ -11,7 +11,7 @@ import java.awt.*;
 
 public class Window extends JFrame
 {
-	private Panel panel;
+	private GamePanel panel;
 	Window(String name,int width,int height)
 	{
 		super(name);
@@ -29,7 +29,7 @@ public class Window extends JFrame
 			e.printStackTrace();
 		}
 
-		this.panel = new Panel(width,height);
+		this.panel = new GamePanel(width,height);
 		this.add(this.panel);
 		this.pack();
 		
@@ -78,7 +78,7 @@ public class Window extends JFrame
 		});
 	}
 	
-	public Panel getMainPanel()
+	public GamePanel getMainPanel()
 	{
 		return this.panel;
 	}

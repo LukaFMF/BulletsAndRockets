@@ -23,8 +23,20 @@ public abstract class Shape2D
 		this.origin.translate(x,y);
 	}
 	
+	public void setOrigin(Vec2D v)
+	{
+		this.setOrigin(v.getX(),v.getY());
+	}
+	
+	public void setOrigin(float x,float y)
+	{
+		this.origin.setX(x);
+		this.origin.setY(y);
+	}
+	
 	public Vec2D getOrigin()
 	{
 		return this.origin;
 	}
+	
 }

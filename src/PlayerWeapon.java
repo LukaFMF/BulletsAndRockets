@@ -10,14 +10,11 @@ public class PlayerWeapon
 	static final Vec2D bullSpd = new Vec2D(1.5f,0.f); // zbrisi pol
 	static final float shootCooldown = 250.f; // zbrisi pol
 	
-	private double timer;
 	private double lastShotAt;
 	private Image[] bulletTextures;
 	
-	
 	PlayerWeapon()
 	{
-		this.timer = 0.;
 		this.lastShotAt = 0.;
 
 		try
@@ -34,14 +31,14 @@ public class PlayerWeapon
 	
 	public void update(float deltaTime)
 	{
-		timer += deltaTime;
+
 	}
 	
-	public void tryToShoot(Rect2D shipPosition,LinkedList<PlayerBullet> bullets) // funkcija modificira spremenljivko bullets
+	public void tryToShoot(Rect2D shipPosition,double timer,LinkedList<PlayerBullet> bullets) // funkcija modificira spremenljivko bullets
 	{
-		if(this.timer - this.lastShotAt > shootCooldown)
+		if(timer - this.lastShotAt > shootCooldown)
 		{
-			this.lastShotAt = this.timer;
+			this.lastShotAt = timer;
 			
 			final float bulletX = shipPosition.getOrigin().getX() + shipPosition.getWidth(); 
 			final float bulletY = shipPosition.getOrigin().getY() + shipPosition.getHeight()/2 - bullY/2;

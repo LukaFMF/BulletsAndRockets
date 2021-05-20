@@ -3,52 +3,51 @@ import java.awt.Image;
 
 public class RectEnemy extends Enemy
 {
-	private int HP;
 	private RectHitbox hitbox;
-	
-	private Vec2D startPoint;
 
-	RectEnemy(float movespeed,Image texture,Vec2D endPoint,Rect2D enemy, int HP,RectHitbox hitbox)
+	RectEnemy(float movespeed,Image texture,Vec2D endPoint,Rect2D enemy, int hp,RectHitbox hitbox)
 	{
-	super(movespeed,texture,endPoint,enemy);
-	this.enemy = enemy;
-	this.startPoint = this.enemy.getOrigin();  //levo zgoraj
-	this.hitbox = hitbox;
-	this.HP = 1;
+		super(movespeed,texture,endPoint,enemy);
+		this.enemy = enemy;
+		this.hitbox = hitbox;
+		this.hp = 1;
 	}
 	
 	public float getOriginX() 
 	{
 		return this.enemy.getOrigin().getX();
 	}
+	
 	public float getOriginY() 
 	{
 		return this.enemy.getOrigin().getY();
 	}
 	
 	@Override
-	public void update(float deltaTime) 
+	public void update(double timer,float deltaTime) 
 	{
+		final Vec2D origin = this.enemy.getOrigin();
 		
-		float startx = this.startPoint.getX();
-		float starty = this.startPoint.getY();
+		final float currX = origin.getX();
+		final float currY = origin.getY();
 		
-		float endx = this.endPoint.getX();
-		float endy = this.endPoint.getY();
+		float endX = this.endPoint.getX();
+		float endY = this.endPoint.getY();
 		
 		
-		Vec2D movementdirection = new Vec2D(endx - startx,endy - starty);
-				
-		movementdirection.normalize();
-
+		this.movementDirection.zero();
+		this.movementDirection.translate(endX - currX,endY - currY);
 		
-		float konst = this.movespeed * deltaTime;
-		
-		movementdirection.scalarMul(konst);
-
-		this.enemy.translate(movementdirection);
-		this.hitbox.translate(movementdirection);
-	
+		if(!this.movementDirection.isZeroVec())
+		{
+			this.movementDirection.normalize();
+			
+			final float moveAmount = deltaTime * this.pixelsPerMilli;
+			this.movementDirection.scalarMul(moveAmount);
+			
+			this.enemy.translate(this.movementDirection);
+			this.hitbox.translate(this.movementDirection);
+		}
 	}
 
 	@Override
@@ -66,7 +65,7 @@ public class RectEnemy extends Enemy
 	}
 	public boolean HasHP() 
 	{
-		if (HP > 0)
+		if (this.hp > 0)
 			return true;
 		return false;				
 	}

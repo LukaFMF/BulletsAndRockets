@@ -12,8 +12,9 @@ public class Player
 	private int panelWidth; // le za informacijo o velikosti okna
 	private int panelHeight;
 	private Rect2D rect;
+	private float pixelsPerMilli; // speed
 	private Vec2D movementDirection;
-	private Vec2D hitboxLocation; // relativna lokacija hitbox-a glede na izhodisce this.rect 
+	private Vec2D hitboxLocation; // relativna lokacija hitbox-a glede na izhodisce this.rect
 	private CircleHitbox hitbox;
 	private PlayerWeapon weapon;
 	private Image texture;
@@ -26,6 +27,7 @@ public class Player
 		this.bullets = new LinkedList<PlayerBullet>();
 		
 		this.rect = rect;
+		this.pixelsPerMilli = .5f;
 		
 		this.weapon = new PlayerWeapon();
 		
@@ -53,7 +55,7 @@ public class Player
 		}
 	}
 	
-	public void update(float deltaTime,KeyboardControls keyboard,int windowWidth,int windowHeight)
+	public void update(double timer,float deltaTime,KeyboardControls keyboard)
 	{
 		int i = 0;
 		while(i < this.bullets.size())
@@ -69,8 +71,6 @@ public class Player
 		
 		this.weapon.update(deltaTime);
 		
-		final float pixelsPerMilli = .5f;
-		
 		this.movementDirection.zero();
 		
 		Map<Integer,Boolean> keyMap = keyboard.getKeyMap();
@@ -83,32 +83,28 @@ public class Player
 		if(keyMap.get(KeyEvent.VK_RIGHT))
 			this.movementDirection.translate(1.f,.0f);
 		if(keyMap.get(KeyEvent.VK_SPACE))
-			this.weapon.tryToShoot(this.rect,this.bullets);
+			this.weapon.tryToShoot(this.rect,timer,this.bullets);
 		
 		if(!this.movementDirection.isZeroVec())
 		{
 			this.movementDirection.normalize();
 			
-			final float moveAmount = deltaTime * pixelsPerMilli;
+			final float moveAmount = deltaTime * this.pixelsPerMilli;
+			this.movementDirection.scalarMul(moveAmount);
 			
-			final float moveX = this.movementDirection.getX() * moveAmount;
-			final float moveY = this.movementDirection.getY() * moveAmount;
-			this.rect.translate(moveX,moveY);
+			this.rect.translate(this.movementDirection);
 		}
 		
-		float rectX = this.rect.getOrigin().getX();
-		float rectY = this.rect.getOrigin().getY();
+		final Vec2D origin = this.rect.getOrigin();
+		final float rectX = origin.getX();
+		final float rectY = origin.getY();
 		final float rectWidth = this.rect.getWidth();
 		final float rectHeight = this.rect.getHeight();
 		
-		this.rect.getOrigin().setX(HelperFuncs.clamp(rectX,0,(float)windowWidth - rectWidth));
-		this.rect.getOrigin().setY(HelperFuncs.clamp(rectY,0,(float)windowHeight - rectHeight));
+		origin.setX(HelperFuncs.clamp(rectX,0,(float)this.panelWidth - rectWidth));
+		origin.setY(HelperFuncs.clamp(rectY,0,(float)this.panelHeight - rectHeight));
 		
-		rectX = this.rect.getOrigin().getX();
-		rectY = this.rect.getOrigin().getY();
-		
-		this.hitbox.getHitbox().getOrigin().setX(rectX);
-		this.hitbox.getHitbox().getOrigin().setY(rectY);
+		this.hitbox.setHitboxOrigin(origin);
 		this.hitbox.translate(this.hitboxLocation);
 	}
 	

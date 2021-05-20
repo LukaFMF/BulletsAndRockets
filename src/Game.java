@@ -8,7 +8,7 @@ public class Game
 		final long fps = 60;
 		final long frameDelay = (long)((1/(float)fps)*1e9);
 		long lastFrameTime = System.nanoTime();
-		Panel mainPanel = win.getMainPanel();
+		GamePanel mainPanel = win.getMainPanel();
 		while(true)
 		{
 			final long startOfFrame = System.nanoTime();

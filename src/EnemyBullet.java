@@ -4,7 +4,6 @@ import java.awt.Image;
 public class EnemyBullet extends Projectile
 {
 	private CircleHitbox hitbox;
-	private Vec2D circleorigin;
 	
 	EnemyBullet(Rect2D rect, Vec2D speed, Image texture)
 	{

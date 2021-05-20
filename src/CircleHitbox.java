@@ -34,6 +34,16 @@ public class CircleHitbox
 		this.translate(v.getX(),v.getY());
 	}
 	
+	public void setHitboxOrigin(Vec2D v)
+	{
+		this.setHitboxOrigin(v.getX(),v.getY());
+	}
+	
+	public void setHitboxOrigin(float x,float y)
+	{
+		this.hitbox.setOrigin(x,y);
+	}
+	
 	public Circle2D getHitbox()
 	{
 		return this.hitbox;
