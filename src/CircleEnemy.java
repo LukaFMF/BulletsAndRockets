@@ -4,12 +4,13 @@ public class CircleEnemy extends Enemy
 {
 	private CircleHitbox hitbox;
 	
-	CircleEnemy(float movespeed,Image texture,Vec2D endPoint,Rect2D enemy, int hp,CircleHitbox hitbox)
+	CircleEnemy(float movespeed,int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying)
 	{
-		super(movespeed,texture,endPoint,enemy);
-		this.enemy = enemy;
-		this.hitbox = hitbox;
-		this.hp = 1;
+		super(movespeed,hp,texture,enemy,waypoints,isCyclying);
+		
+		Vec2D newOrigin = this.enemy.getOrigin().clone();
+		newOrigin.translate(this.enemy.getWidth()/2,this.enemy.getHeight()/2);
+		this.hitbox = new CircleHitbox(newOrigin,this.enemy.getWidth()/2);
 	}
 	
 	public float getOriginX() 
@@ -29,11 +30,25 @@ public class CircleEnemy extends Enemy
 		final float currX = origin.getX();
 		final float currY = origin.getY();
 		
-		float endX = this.endPoint.getX();
-		float endY = this.endPoint.getY();
+		boolean moving = true; 
+		if(this.waypoints[this.currWaypointInx].isWithinError(origin,3.f))
+		{
+			moving = false;
+			this.currWaypointInx++;
+			if(this.currWaypointInx == this.waypoints.length)
+			{
+				if(this.repeatWaypoints)
+					this.currWaypointInx = 0;
+				else
+					this.currWaypointInx--;
+			}
+		}
+		
+		final Vec2D currTarget = this.waypoints[this.currWaypointInx];
 		
 		this.movementDirection.zero();
-		this.movementDirection.translate(endX - currX,endY - currY);
+		if(moving)
+			this.movementDirection.translate(currTarget.getX() - currX,currTarget.getY() - currY);
 		
 		if(!this.movementDirection.isZeroVec())
 		{

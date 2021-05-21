@@ -10,30 +10,22 @@ public abstract class Enemy
 	protected Vec2D movementDirection;
 	protected int hp;
 	protected Image texture;
-	protected Vec2D endPoint;
-	//protected List<EnemyBullet> bullets;
-	//protected ... trijectori;
+	protected int currWaypointInx;
+	protected Vec2D[] waypoints;
+	protected boolean repeatWaypoints;
 	
-	Enemy(float pixelsPerMilli,Image texture ,Vec2D endPoint,Rect2D enemy)
+	Enemy(float pixelsPerMilli,int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying)
 	{
 		this.pixelsPerMilli = pixelsPerMilli;
+		this.hp = hp;
 		this.movementDirection = new Vec2D(0.f,0.f);
 		this.texture = texture;
-		this.endPoint = endPoint;
 		this.enemy = enemy;
-		//this.bullets = new LinkedList<EnemyBullet>();
+		this.currWaypointInx = 0;
+		this.waypoints = waypoints;
+		this.repeatWaypoints = isCyclying;
 	}
 	
-	public float getEndpointX()
-	{
-		return this.endPoint.getX();
-	}
-	
-	public float getEndpointY()
-	{
-		return this.endPoint.getY();
-	}
-
 	public abstract void update(double timer,float deltaTime);
 
 	public abstract void draw(Graphics2D g);

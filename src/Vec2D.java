@@ -38,6 +38,13 @@ public class Vec2D
 		return (float)Math.sqrt(diffX*diffX + diffY*diffY);
 	}
 	
+	public boolean isWithinError(Vec2D v,float maxError)
+	{
+		if(Math.abs(this.x - v.getX()) < maxError && Math.abs(this.y - v.getY()) < maxError)
+			return true;
+		return false;
+	}
+	
 	public float norm()
 	{
 		return (float)Math.sqrt(this.x*this.x + this.y*this.y);

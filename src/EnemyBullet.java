@@ -7,7 +7,7 @@ public class EnemyBullet extends Projectile
 	
 	EnemyBullet(Rect2D rect, Vec2D speed, Image texture)
 	{
-		super(rect, speed, texture);
+		super(rect,speed,texture);
 		
 		final Vec2D origin = this.rect.getOrigin();
 		final float rectX = origin.getX();
@@ -24,7 +24,7 @@ public class EnemyBullet extends Projectile
 		
 		movement.scalarMul(deltaTime);
 		
-		this.rect.translate(movement);		// metki se premikajo le premoèrtno
+		this.rect.translate(movement);		// metki se premikajo le premocrtno
 		this.hitbox.translate(movement);
 	}
 

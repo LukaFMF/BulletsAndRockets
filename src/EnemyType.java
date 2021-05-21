@@ -73,5 +73,5 @@ public class EnemyType
 //	{
 //		return this.bulletTexture;
 //	}
-	
+	public void shoot(Vec2D target) {}
 }

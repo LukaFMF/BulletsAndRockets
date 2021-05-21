@@ -10,6 +10,7 @@ public class GamePanel extends JPanel
 {
 	private int panelWidth; // le za informacijo o velikosti okna
 	private int panelHeight;
+	private int currLevel;
 	private double timer;
 	private Player player;
 	private Background background;
@@ -27,9 +28,10 @@ public class GamePanel extends JPanel
 		
 		this.panelWidth = width;
 		this.panelHeight = height;
-		this.timer = 0.;
 		this.setPreferredSize(new Dimension(this.panelWidth,this.panelHeight));
+		this.timer = 0.;
 		
+		this.currLevel = 0;
 		this.player = new Player(new Rect2D(50.f,300.f,100.f,150.f),this.panelWidth,this.panelHeight);
 		
 		this.keyboard = new KeyboardControls();
@@ -45,16 +47,15 @@ public class GamePanel extends JPanel
 			this.enemyTypes = new EnemyType[] {
 				new EnemyType(0,100.f,100.f,true,.3f,5,".\\assets\\images\\enemy0.png")
 			};
+			
+			this.levels = new Level[] {
+				new Level(".\\assets\\levels\\lvl1.txt")
+			};
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		}
-		
-		this.levels = new Level[] {
-				new Level(".\\assets\\levels\\lvl1.txt")
-		};
-			
+		}	
 	}
 	
 	public void updateState(float deltaTime) // cas v ms
@@ -65,6 +66,8 @@ public class GamePanel extends JPanel
 		
 		this.player.update(this.timer,deltaTime,this.keyboard);
 		this.background.update(deltaTime);
+		
+		this.levels[this.currLevel].update(this.timer,this.circleEnemies,this.rectEnemies,this.enemyTypes);
 		
 		for(CircleEnemy circleEnemy : this.circleEnemies)
 			circleEnemy.update(this.timer,deltaTime);

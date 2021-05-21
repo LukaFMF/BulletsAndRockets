@@ -57,7 +57,7 @@ public class RectHitbox
 		final float width = this.hitbox.getWidth();
 		final float height = this.hitbox.getHeight();
 		
-		g.setColor(Color.GREEN);
+		g.setColor(Color.RED);
 		g.setStroke(new BasicStroke(1.f));
 		g.drawRect((int)origin.getX(),(int)origin.getY(),(int)width,(int)height);
 	}
