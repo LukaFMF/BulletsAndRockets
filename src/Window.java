@@ -12,7 +12,7 @@ import java.awt.*;
 public class Window extends JFrame
 {
 	private GamePanel panel;
-	Window(String name,int width,int height)
+	Window(String name,int width,int height) throws IOException
 	{
 		super(name);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

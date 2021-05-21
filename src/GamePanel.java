@@ -21,7 +21,7 @@ public class GamePanel extends JPanel
 	private Level[] levels;
 	
 	
-	GamePanel(int width,int height)
+	GamePanel(int width,int height) throws IOException
 	{
 		super();
 		

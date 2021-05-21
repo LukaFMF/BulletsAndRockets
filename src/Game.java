@@ -1,6 +1,8 @@
+import java.io.IOException;
+
 public class Game 
 {
-	public static void main(String[] args) throws InterruptedException
+	public static void main(String[] args) throws InterruptedException, IOException
 	{
 		Window win = new Window("Bullets & Rockets",1280,720);
 		win.setVisible(true);
