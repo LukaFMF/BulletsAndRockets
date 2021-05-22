@@ -83,17 +83,19 @@ public class Level
 			{
 				EnemyType currEnemyType = enemyTypes[enemyToSpawn.getId()];
 				
-				int hp = currEnemyType.getHp();
-				float pixelsPerMilli = currEnemyType.getSpeed();
-				Image texture = currEnemyType.getTexture();
-				Rect2D boundingBox = new Rect2D(enemyToSpawn.getSpawnPoint(),currEnemyType.getBoundingBoxWidth(),currEnemyType.getBoundingBoxHeight());
-				boolean repeatedWaypoints = enemyToSpawn.hasRepeatingWaypoints();
-				Vec2D[] waypoints = enemyToSpawn.getWaypoints();
+				final int hp = currEnemyType.getHp();
+				final float pixelsPerMilli = currEnemyType.getSpeed();
+				final Image texture = currEnemyType.getTexture();
+				final Rect2D boundingBox = new Rect2D(enemyToSpawn.getSpawnPoint(),currEnemyType.getBoundingBoxWidth(),currEnemyType.getBoundingBoxHeight());
+				final boolean repeatedWaypoints = enemyToSpawn.hasRepeatingWaypoints();
+				final Vec2D[] waypoints = enemyToSpawn.getWaypoints();
+				final float shootCooldown = currEnemyType.getShootCooldown();
+				final BulletPattern pattern = currEnemyType.getPattern();
 				
 				if(currEnemyType.hasCircleHitbox())
-					circleEnemies.add(new CircleEnemy(pixelsPerMilli,hp,texture,boundingBox,waypoints,repeatedWaypoints));
+					circleEnemies.add(new CircleEnemy(pixelsPerMilli,hp,texture,boundingBox,waypoints,repeatedWaypoints,new EnemyWeapon(shootCooldown,pattern)));
 				else
-					rectEnemies.add(new RectEnemy(pixelsPerMilli,hp,texture,boundingBox,waypoints,repeatedWaypoints));
+					rectEnemies.add(new RectEnemy(pixelsPerMilli,hp,texture,boundingBox,waypoints,repeatedWaypoints,new EnemyWeapon(shootCooldown,pattern)));
 			}
 			this.currentInx++;
 		}

@@ -13,8 +13,10 @@ public abstract class Enemy
 	protected int currWaypointInx;
 	protected Vec2D[] waypoints;
 	protected boolean repeatWaypoints;
+	protected EnemyWeapon enemyWeapon;
+	protected boolean isIdle;
 	
-	Enemy(float pixelsPerMilli,int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying)
+	Enemy(float pixelsPerMilli,int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying,EnemyWeapon enemyWeapon)
 	{
 		this.pixelsPerMilli = pixelsPerMilli;
 		this.hp = hp;
@@ -24,9 +26,16 @@ public abstract class Enemy
 		this.currWaypointInx = 0;
 		this.waypoints = waypoints;
 		this.repeatWaypoints = isCyclying;
+		this.enemyWeapon = enemyWeapon;
+		this.isIdle = false;
 	}
 	
-	public abstract void update(double timer,float deltaTime);
+	public abstract void update(float deltaTime,double timer,LinkedList<EnemyBullet> enemyBullets,Vec2D target,LinkedList<PlayerBullet> playerBullets);
 
 	public abstract void draw(Graphics2D g);
+	
+	public boolean isAlive() 
+	{
+		return this.hp > 0;		
+	}
 }

@@ -1,13 +1,14 @@
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.LinkedList;
 
 public class RectEnemy extends Enemy
 {
 	private RectHitbox hitbox;
 
-	RectEnemy(float movespeed, int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying)
+	RectEnemy(float movespeed, int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying,EnemyWeapon enemyWeapon)
 	{
-		super(movespeed,hp,texture,enemy,waypoints,isCyclying);
+		super(movespeed,hp,texture,enemy,waypoints,isCyclying,enemyWeapon);
 		this.hitbox = new RectHitbox(enemy.getOrigin(),enemy.getWidth(),enemy.getHeight());
 	}
 	
@@ -22,42 +23,62 @@ public class RectEnemy extends Enemy
 	}
 	
 	@Override
-	public void update(double timer,float deltaTime) 
+	public void update(float deltaTime,double timer,LinkedList<EnemyBullet> enemyBullets,Vec2D target,LinkedList<PlayerBullet> playerBullets) 
 	{
-		final Vec2D origin = this.enemy.getOrigin();
-		
-		final float currX = origin.getX();
-		final float currY = origin.getY();
-		
-		boolean moving = true;
-		if(this.waypoints[this.currWaypointInx].isWithinError(origin,3.f))
+		for(PlayerBullet currBullet : playerBullets)
 		{
-			moving = false;
-			this.currWaypointInx++;
-			if(this.currWaypointInx == this.waypoints.length)
+			if(this.hitbox.collidesWith(currBullet.getHitbox()))
 			{
-				if(this.repeatWaypoints)
-					this.currWaypointInx = 0;
-				else
-					this.currWaypointInx--;
+				this.hp -= currBullet.getDamage();
+				currBullet.destroy();
 			}
 		}
 		
-		final Vec2D currTarget = this.waypoints[this.currWaypointInx];
+		this.enemyWeapon.update(timer,this.enemy,enemyBullets,target);
 		
-		this.movementDirection.zero();
-		if(moving)
-			this.movementDirection.translate(currTarget.getX() - currX,currTarget.getY() - currY);
-		
-		if(!this.movementDirection.isZeroVec())
+		if(this.isIdle)
 		{
-			this.movementDirection.normalize();
+			final Vec2D currTarget = new Vec2D(0.f,(float)(Math.sin(timer/1e3) * this.pixelsPerMilli));
+			this.enemy.translate(currTarget);
+			this.hitbox.translate(currTarget);
+		}
+		else
+		{
+			final Vec2D origin = this.enemy.getOrigin();
 			
-			final float moveAmount = deltaTime * this.pixelsPerMilli;
-			this.movementDirection.scalarMul(moveAmount);
+			final float currX = origin.getX();
+			final float currY = origin.getY();
 			
-			this.enemy.translate(this.movementDirection);
-			this.hitbox.translate(this.movementDirection);
+			if(this.waypoints[this.currWaypointInx].isWithinError(origin,3.f))
+			{
+				this.currWaypointInx++;
+				if(this.currWaypointInx == this.waypoints.length)
+				{
+					if(this.repeatWaypoints)
+						this.currWaypointInx = 0;
+					else
+					{
+						this.currWaypointInx--;
+						this.isIdle = true;
+					}
+				}
+			}
+			
+			final Vec2D currTarget = this.waypoints[this.currWaypointInx];
+		
+			this.movementDirection.zero();
+			this.movementDirection.translate(currTarget.getX() - currX,currTarget.getY() - currY);
+			
+			if(!this.movementDirection.isZeroVec())
+			{
+				this.movementDirection.normalize();
+				
+				final float moveAmount = deltaTime * this.pixelsPerMilli;
+				this.movementDirection.scalarMul(moveAmount);
+				
+				this.enemy.translate(this.movementDirection);
+				this.hitbox.translate(this.movementDirection);
+			}
 		}
 	}
 

@@ -44,8 +44,16 @@ public class GamePanel extends JPanel
 		
 		try
 		{
+			Image enemyBulletTexture = Loader.loadImage(".\\assets\\images\\enemyBullet.png",30,30);
 			this.enemyTypes = new EnemyType[] {
-				new EnemyType(0,100.f,100.f,true,.3f,5,".\\assets\\images\\enemy0.png")
+				new EnemyType(0,100.f,100.f,true,.3f,7,".\\assets\\images\\enemy0.png",1500.f,
+						(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+						{
+							final Vec2D enemyOrigin = location.getOrigin();
+							final float enemyWidth = location.getWidth();
+							final float enemyHeight = location.getHeight();
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() - 10.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.7f,.0f),enemyBulletTexture));
+						}),
 			};
 			
 			this.levels = new Level[] {
@@ -64,19 +72,44 @@ public class GamePanel extends JPanel
 		this.timer += deltaTime;
 		
 		
+		
 		this.player.update(this.timer,deltaTime,this.keyboard);
 		this.background.update(deltaTime);
 		
+		final Vec2D target = this.player.getAsTarget();
+		
 		this.levels[this.currLevel].update(this.timer,this.circleEnemies,this.rectEnemies,this.enemyTypes);
 		
-		for(CircleEnemy circleEnemy : this.circleEnemies)
-			circleEnemy.update(this.timer,deltaTime);
+		for(int i = 0;i < this.circleEnemies.size();)
+		{
+			CircleEnemy currEnemy = this.circleEnemies.get(i);
+			currEnemy.update(deltaTime,this.timer,this.enemyBullets,target,this.player.getBullets());
+			if(!currEnemy.isAlive())
+				this.circleEnemies.remove(i);
+			else
+				i++;
+		}
 		
-		for(RectEnemy rectEnemy : this.rectEnemies)
-			rectEnemy.update(this.timer,deltaTime);
+		for(int i = 0;i < this.rectEnemies.size();)
+		{
+			RectEnemy currEnemy = this.rectEnemies.get(i);
+			currEnemy.update(deltaTime,this.timer,this.enemyBullets,target,this.player.getBullets());
+			
+			if(!currEnemy.isAlive())
+				this.rectEnemies.remove(i);
+			else
+				i++;
+		}
 		
-		for(EnemyBullet enemyBullet : this.enemyBullets)
-			enemyBullet.update(deltaTime);
+		for(int i = 0;i < this.enemyBullets.size();)
+		{
+			EnemyBullet currBullet = enemyBullets.get(i);
+			currBullet.update(deltaTime);
+			if(currBullet.isOffscreen(this.panelWidth,this.panelHeight))
+				this.enemyBullets.remove(i);
+			else
+				i++;
+		}
 	}
 	
 	@Override

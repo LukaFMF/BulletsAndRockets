@@ -57,13 +57,13 @@ public class Player
 	
 	public void update(double timer,float deltaTime,KeyboardControls keyboard)
 	{
-		int i = 0;
-		while(i < this.bullets.size())
+		
+		for(int i = 0;i < this.bullets.size();)
 		{
 			final PlayerBullet currBullet = this.bullets.get(i);
 			currBullet.update(deltaTime);
 			
-			if(currBullet.isOffscreen(this.panelWidth,this.panelHeight))
+			if(currBullet.hasBeenDestroyed() || currBullet.isOffscreen(this.panelWidth,this.panelHeight))
 				this.bullets.remove(i);
 			else
 				i++;
@@ -122,5 +122,14 @@ public class Player
 	{
 		return rect;
 	}
-			
+	
+	public Vec2D getAsTarget()
+	{
+		return this.hitbox.getHitbox().getOrigin();
+	}
+	
+	public LinkedList<PlayerBullet> getBullets()
+	{
+		return this.bullets;
+	}
 }

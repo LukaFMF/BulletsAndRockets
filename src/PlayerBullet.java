@@ -3,16 +3,15 @@ import java.awt.*;
 public class PlayerBullet extends Projectile 
 {
 	private RectHitbox hitbox;
+	private int damage;
+	private boolean isDestroyed;
 	
-	PlayerBullet(Rect2D rect,Vec2D speed,Image texture)
+	PlayerBullet(Rect2D rect,Vec2D speed,int damage,Image texture)
 	{
 		super(rect,speed,texture);
 		this.hitbox = new RectHitbox(this.rect.getOrigin(),this.rect.getWidth(),this.rect.getHeight());
-	}
-	
-	public RectHitbox getHitbox()
-	{
-		return this.hitbox;
+		this.damage = damage;
+		this.isDestroyed = false;
 	}
 	
 	@Override
@@ -38,5 +37,26 @@ public class PlayerBullet extends Projectile
 	{
 		// vsi metki grejo le naravnost 
 		return this.rect.getOrigin().getX() > width;
+	}
+	
+	public RectHitbox getHitbox()
+	{
+		return this.hitbox;
+	}
+	
+	public int getDamage()
+	{
+		return this.damage;
+	}
+	
+	
+	public void destroy()
+	{
+		this.isDestroyed = true;
+	}
+	
+	public boolean hasBeenDestroyed()
+	{
+		return this.isDestroyed;
 	}
 }

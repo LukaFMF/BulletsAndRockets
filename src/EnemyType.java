@@ -10,9 +10,10 @@ public class EnemyType
 	private float pixelsPerMilli;
 	private int hp;
 	private Image texture;
-	//private Image bulletTexture;
+	private float shootCooldown;
+	private BulletPattern pattern;
 	
-	EnemyType(int id,float width,float height,boolean circleHitbox,float speed,int hp,String pathToFile) throws Exception
+	EnemyType(int id,float width,float height,boolean circleHitbox,float speed,int hp,String pathToFile,float shootCooldown,BulletPattern pattern) throws Exception
 	{
 		this.id = id;
 		this.boundingBoxWidth = width; 
@@ -20,6 +21,9 @@ public class EnemyType
 		this.circleHitbox = circleHitbox;
 		this.pixelsPerMilli = speed;
 		this.hp = hp;
+		this.shootCooldown = shootCooldown;
+		this.pattern = pattern;
+		
 		
 		if(this.circleHitbox && this.boundingBoxWidth != this.boundingBoxHeight)
 			throw new Exception("If circular hitbox is selected, width and height of the bounding box must be equal!");
@@ -69,9 +73,13 @@ public class EnemyType
 		return this.texture;
 	}
 
-//	public Image getBulletTexture()
-//	{
-//		return this.bulletTexture;
-//	}
-	public void shoot(Vec2D target) {}
+	public float getShootCooldown()
+	{
+		return this.shootCooldown;
+	}
+	
+	public BulletPattern getPattern()
+	{
+		return this.pattern;
+	}
 }
