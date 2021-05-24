@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 public class GamePanel extends JPanel
 {
@@ -15,11 +16,13 @@ public class GamePanel extends JPanel
 	private Player player;
 	private Background background;
 	private KeyboardControls keyboard;
+	private CollisionGrid grid;
 	private LinkedList<CircleEnemy> circleEnemies;
 	private LinkedList<RectEnemy> rectEnemies;
 	private LinkedList<EnemyBullet> enemyBullets;
 	private EnemyType[] enemyTypes;
 	private Level[] levels;
+	private TextRenderer textRend;
 	
 	
 	GamePanel(int width,int height) throws IOException
@@ -31,8 +34,10 @@ public class GamePanel extends JPanel
 		this.setPreferredSize(new Dimension(this.panelWidth,this.panelHeight));
 		this.timer = 0.;
 		
+		this.grid = new CollisionGrid(10,this.panelWidth,this.panelHeight);
+		
 		this.currLevel = 0;
-		this.player = new Player(new Rect2D(50.f,300.f,100.f,150.f),this.panelWidth,this.panelHeight);
+		this.player = new Player(new Rect2D(50.f,300.f,100.f,150.f),this.panelWidth,this.panelHeight,this.grid);
 		
 		this.keyboard = new KeyboardControls();
 		
@@ -41,6 +46,8 @@ public class GamePanel extends JPanel
 		this.circleEnemies = new LinkedList<CircleEnemy>();
 		this.rectEnemies = new LinkedList<RectEnemy>();
 		this.enemyBullets = new LinkedList<EnemyBullet>();
+		
+		textRend = new TextRenderer();
 		
 		try
 		{
@@ -52,7 +59,7 @@ public class GamePanel extends JPanel
 							final Vec2D enemyOrigin = location.getOrigin();
 							final float enemyWidth = location.getWidth();
 							final float enemyHeight = location.getHeight();
-							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() - 10.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.7f,.0f),enemyBulletTexture));
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() - 10.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.7f,.0f),enemyBulletTexture,this.grid));
 						}),
 			};
 			
@@ -70,7 +77,6 @@ public class GamePanel extends JPanel
 	{
 		// IMPORTANT: global timer
 		this.timer += deltaTime;
-		
 		
 		
 		this.player.update(this.timer,deltaTime,this.keyboard);
@@ -104,12 +110,28 @@ public class GamePanel extends JPanel
 		for(int i = 0;i < this.enemyBullets.size();)
 		{
 			EnemyBullet currBullet = enemyBullets.get(i);
-			currBullet.update(deltaTime);
-			if(currBullet.isOffscreen(this.panelWidth,this.panelHeight))
+			final Set<Integer> cellInxsNearPlayer = this.player.getNeighbouringCellInxs(); 
+			
+			if(cellInxsNearPlayer.contains(currBullet.getCollisionGridInx()))
+			{
+				final CircleHitbox playerHitbox = this.player.getHitbox();
+				final CircleHitbox enemyBulletHitbox =  currBullet.getHitbox();
+				
+				if(!this.player.isDestroyed() && !this.player.isInvincible() && playerHitbox.collidesWith(enemyBulletHitbox))
+				{
+					this.player.destroy(this.timer,this.textRend);
+					currBullet.destroy();
+				}
+			}
+			
+			currBullet.update(deltaTime,this.panelWidth,this.panelHeight);
+			if(currBullet.hasBeenDestroyed())
 				this.enemyBullets.remove(i);
 			else
 				i++;
 		}
+		
+		this.textRend.update(timer);
 	}
 	
 	@Override
@@ -119,7 +141,9 @@ public class GamePanel extends JPanel
 		Graphics2D graphics = (Graphics2D)g;
 		
 		this.background.draw(graphics);
-		this.player.draw(graphics);
+		//this.grid.draw(graphics);
+		if(!this.player.isDestroyed())
+			this.player.draw(graphics);
 		
 		for(CircleEnemy circleEnemy : this.circleEnemies)
 			circleEnemy.draw(graphics);
@@ -129,7 +153,8 @@ public class GamePanel extends JPanel
 		
 		for(EnemyBullet enemyBullet : this.enemyBullets)
 			enemyBullet.draw(graphics);
-
+		
+		this.textRend.draw(graphics);
 	}
 	
 	public KeyboardControls getKeyboard()

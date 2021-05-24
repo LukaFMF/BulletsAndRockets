@@ -4,7 +4,6 @@ public class PlayerBullet extends Projectile
 {
 	private RectHitbox hitbox;
 	private int damage;
-	private boolean isDestroyed;
 	
 	PlayerBullet(Rect2D rect,Vec2D speed,int damage,Image texture)
 	{
@@ -15,9 +14,11 @@ public class PlayerBullet extends Projectile
 	}
 	
 	@Override
-	public void update(float deltaTime)
+	public void update(float deltaTime,int windowWidth,int windowHeight)
 	{
-		//TODO add list of enemies
+		if(this.isOffscreen(windowWidth,windowHeight))
+			this.destroy();
+		
 		Vec2D movementAmount = this.speed.clone();
 		movementAmount.scalarMul(deltaTime);
 		

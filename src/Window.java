@@ -11,6 +11,7 @@ import java.awt.*;
 
 public class Window extends JFrame
 {
+	private MenuPanel menu;
 	private GamePanel panel;
 	Window(String name,int width,int height) throws IOException
 	{
@@ -28,6 +29,10 @@ public class Window extends JFrame
 		{
 			e.printStackTrace();
 		}
+		
+//		this.menu = new MenuPanel(width,height);
+//		this.add(this.menu);
+//		this.pack();
 
 		this.panel = new GamePanel(width,height);
 		this.add(this.panel);
@@ -81,5 +86,10 @@ public class Window extends JFrame
 	public GamePanel getMainPanel()
 	{
 		return this.panel;
+	}
+	
+	public MenuPanel getMenuPanel()
+	{
+		return this.menu;
 	}
 }

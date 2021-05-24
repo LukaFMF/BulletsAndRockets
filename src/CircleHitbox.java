@@ -49,6 +49,17 @@ public class CircleHitbox
 		return this.hitbox;
 	}
 	
+	public Vec2D getHitboxOrigin()
+	{
+		return this.hitbox.getOrigin();
+	}
+	
+	public int getCollisionGridInx(CollisionGrid grid)
+	{
+		final Vec2D hitboxOrigin = this.hitbox.getOrigin();
+		return (int)(hitboxOrigin.getY()/grid.getCellHeight())*grid.getGridSize() + (int)(hitboxOrigin.getX()/grid.getCellWidth());
+	}
+	
 	public void draw(Graphics2D g)
 	{	
 		final Vec2D origin = this.hitbox.getOrigin();
