@@ -20,6 +20,7 @@ public class Player
 	private Rect2D rect;
 	private float pixelsPerMilli; // speed
 	private Vec2D movementDirection;
+	private float focusSpeed;
 	private int thrusterState;
 	private Image thrusterStationary;
 	private Image thrusterAccelerating;
@@ -45,8 +46,9 @@ public class Player
 		
 		this.rect = rect;
 		this.pixelsPerMilli = .5f;
+		this.focusSpeed = .4f;
 		
-		this.weapon = new PlayerWeapon();
+		this.weapon = new PlayerWeapon(this.rect);
 		
 		this.thrusterState = ShipThrusterState.STATIONARY;
 		this.movementDirection = new Vec2D(0.f,0.f);
@@ -68,7 +70,7 @@ public class Player
 		this.collisionGridInx = this.hitbox.getCollisionGridInx(this.grid);
 		this.updateNeighbouringCells();
 		
-		this.lives = 1;//3;
+		this.lives = 3;
 		this.isInvincible = false;
 		this.isDestroyed = false;
 		this.destroyedAt = 0.;
@@ -123,6 +125,7 @@ public class Player
 		{
 			this.movementDirection.zero();
 			
+			boolean focusMode = false;
 			Map<Integer,Boolean> keyMap = keyboard.getKeyMap();
 			if(keyMap.get(KeyEvent.VK_UP))
 				this.movementDirection.translate(.0f,-1.f);
@@ -134,6 +137,8 @@ public class Player
 				this.movementDirection.translate(1.f,.0f);
 			if(keyMap.get(KeyEvent.VK_SPACE))
 				this.weapon.tryToShoot(this.rect,timer,this.bullets);
+			if(keyMap.get(KeyEvent.VK_SHIFT))
+				focusMode = true;
 			
 			if(!this.movementDirection.isZeroVec())
 			{
@@ -145,7 +150,7 @@ public class Player
 				
 				this.movementDirection.normalize();
 				
-				final float moveAmount = deltaTime * this.pixelsPerMilli;
+				final float moveAmount = deltaTime * this.pixelsPerMilli * (focusMode ? this.focusSpeed : 1.f);
 				this.movementDirection.scalarMul(moveAmount);
 				
 				this.rect.translate(this.movementDirection);
@@ -216,6 +221,7 @@ public class Player
 				break;
 			}
 		}
+		this.weapon.draw(g,this.rect.getOrigin());
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.f));
 		this.hitbox.draw(g);
@@ -256,6 +262,11 @@ public class Player
 			if(!inRightmostColumn)
 				this.neighbouringCellInxs.add(this.collisionGridInx + gridSize + 1);
 		}
+	}
+	
+	public void resetAfterLevel()
+	{
+		this.weapon.reset();
 	}
 	
 	public void destroy(double timer)

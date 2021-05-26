@@ -4,7 +4,6 @@ import java.io.IOException;
 public class Background 
 {
 	private Image backgroundTexture;
-	private Image sunTexture;
 	private float startPos;
 	private float endPos;
 	private float currentPos;
@@ -20,7 +19,6 @@ public class Background
 		try
 		{			
 			this.backgroundTexture = Loader.loadImage(pathToFile, windowWidth, windowHeight);
-			this.sunTexture = Loader.loadImage(".\\assets\\images\\sun.png",200,200);
 		}
 		catch(IOException e)
 		{
@@ -42,8 +40,6 @@ public class Background
 	{
 		g.drawImage(this.backgroundTexture,(int)this.currentPos - this.backgroundWidth,0,null);
 		g.drawImage(this.backgroundTexture,(int)this.currentPos,0,null);
-		
-		g.drawImage(this.sunTexture,850,50,null); // sonce
 	}
 	
 }

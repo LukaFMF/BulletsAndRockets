@@ -9,10 +9,13 @@ public class Level
 	private int currentInx;
 	private float[] spawnTimes;
 	private Vector<EnemySpawn>[] spawns;
+	private boolean allEnemiesSpawned;
 	
 	Level(String pathToLvlFile) throws IOException
 	{
+		this.allEnemiesSpawned = false;
 		this.currentInx = 0;
+		
 		File file = new File(pathToLvlFile);
 		
 		if(!file.exists() || !file.canRead())
@@ -99,10 +102,18 @@ public class Level
 			}
 			this.currentInx++;
 		}
+		
+		if(this.currentInx == this.spawnTimes.length)
+			this.allEnemiesSpawned = true;
 	}
 	
 	void reset()
 	{
 		this.currentInx = 0;
+	}
+	
+	public boolean haveAllEnemiesBeenSpawned()
+	{
+		return this.allEnemiesSpawned;
 	}
 }

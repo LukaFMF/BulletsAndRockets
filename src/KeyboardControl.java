@@ -15,6 +15,7 @@ public class KeyboardControl
 		keyMap.put(KeyEvent.VK_LEFT,false);
 		keyMap.put(KeyEvent.VK_RIGHT,false);
 		keyMap.put(KeyEvent.VK_SPACE,false);
+		keyMap.put(KeyEvent.VK_SHIFT,false);
 	}
 	
 	public Map<Integer,Boolean> getKeyMap()

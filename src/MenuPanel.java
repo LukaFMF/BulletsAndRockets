@@ -10,9 +10,11 @@ public class MenuPanel extends JPanel
 	private int panelHeight;
 	private double timer;
 	private Background background;
-	private Rect2D logoBox;
-	private Vec2D logoBobbing;
+	private Rect2D logoBoundingBox;
 	private Image logoTexture;
+	private Vec2D logoBobbing;
+	private Rect2D sunBoundingBox;
+	private Image sunTexture;
 	private JButton playButton;
 	private JButton helpButton;
 	private JButton quitButton;
@@ -31,23 +33,18 @@ public class MenuPanel extends JPanel
 		this.timer = 0.;
 		
 		this.background = new Background(".\\assets\\images\\background.png",this.panelWidth,this.panelHeight);
-//		try
-//		{
-//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		}
-//		catch(Exception e)
-//		{
-//			e.printStackTrace();
-//		}
+
 		this.gameStart = false;
 		this.showHelp = false;
 		this.closeWindow = false;
 		
+		this.sunBoundingBox = new Rect2D(850.f,50.f,200.f,200.f);
 		this.logoBobbing = new Vec2D(0.f,0.f);
-		this.logoBox = new Rect2D(this.panelWidth/2 - 250,50,500,300);
+		this.logoBoundingBox = new Rect2D(this.panelWidth/2 - 250,50.f,500.f,300.f);
 		try 
 		{			
-			this.logoTexture = Loader.loadImage(".\\assets\\images\\logo.png",(int)this.logoBox.getWidth(),(int)this.logoBox.getHeight());
+			this.sunTexture = Loader.loadImage(".\\assets\\images\\sun.png",(int)this.sunBoundingBox.getWidth(),(int)this.sunBoundingBox.getHeight());
+			this.logoTexture = Loader.loadImage(".\\assets\\images\\logo.png",(int)this.logoBoundingBox.getWidth(),(int)this.logoBoundingBox.getHeight());
 		}
 		catch(IOException e)
 		{
@@ -101,7 +98,7 @@ public class MenuPanel extends JPanel
 		this.background.update(deltaTime);
 		
 		this.logoBobbing.setY((float)(Math.sin(this.timer/1e3) * 0.1f));
-		this.logoBox.translate(this.logoBobbing);
+		this.logoBoundingBox.translate(this.logoBobbing);
 	}
 	
 	@Override
@@ -110,9 +107,10 @@ public class MenuPanel extends JPanel
 		super.paintComponent(g);
 		Graphics2D graphics = (Graphics2D)g;
 		
-		final Vec2D logoOrigin = this.logoBox.getOrigin();
+		final Vec2D logoOrigin = this.logoBoundingBox.getOrigin();
 		
 		this.background.draw(graphics);
+		graphics.drawImage(this.sunTexture,850,50,null);
 		graphics.drawImage(this.logoTexture,(int)logoOrigin.getX(),(int)logoOrigin.getY(),null);
 	}
 	

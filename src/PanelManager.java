@@ -1,16 +1,8 @@
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.Map;
-import java.util.Set;
-
 final class GameState // simulacija enum konstrukta
 {
 	public static final int MAINMENU = 0;
 	public static final int HELP = 1;
 	public static final int GAME = 2;
-	public static final int GAMEPAUSED = 3;
 }
 
 public class PanelManager
