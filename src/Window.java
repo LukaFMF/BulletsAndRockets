@@ -11,9 +11,11 @@ import java.awt.*;
 
 public class Window extends JFrame
 {
-	private MenuPanel menu;
-	private GamePanel panel;
-	Window(String name,int width,int height) throws IOException
+//	private MenuPanel menu;
+//	private GamePanel panel;
+	private KeyboardControl keyboardControl;
+	private PanelManager manager;
+	Window(String name,int width,int height)
 	{
 		super(name);
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -30,13 +32,7 @@ public class Window extends JFrame
 			e.printStackTrace();
 		}
 		
-//		this.menu = new MenuPanel(width,height);
-//		this.add(this.menu);
-//		this.pack();
-
-		this.panel = new GamePanel(width,height);
-		this.add(this.panel);
-		this.pack();
+		this.keyboardControl = new KeyboardControl();
 		
 		this.addWindowFocusListener(new WindowFocusListener()
 		{
@@ -44,7 +40,7 @@ public class Window extends JFrame
 		        public void windowLostFocus(WindowEvent e)
 		        {
 		        	// ta funkcija poskrbi, da ob kliku iz okna, ne obdrzimo zadnjega vnosa s tipkovnice
-		        	Map<Integer,Boolean> keyMap = panel.getKeyboard().getKeyMap();
+		        	Map<Integer,Boolean> keyMap = keyboardControl.getKeyMap();
 		        	Set<Integer> keys = keyMap.keySet();
 		        	
 		        	for(Integer key : keys)
@@ -61,7 +57,7 @@ public class Window extends JFrame
 			@Override
 			public void keyPressed(KeyEvent e)
 			{
-				Map<Integer,Boolean> keyboard = panel.getKeyboard().getKeyMap();
+				Map<Integer,Boolean> keyboard = keyboardControl.getKeyMap();
 				
 				final int keyCode = e.getKeyCode();
 				if(keyboard.containsKey(keyCode) && !keyboard.get(keyCode))
@@ -71,7 +67,7 @@ public class Window extends JFrame
 			@Override
 			public void keyReleased(KeyEvent e)
 			{
-				Map<Integer,Boolean> keyboard = panel.getKeyboard().getKeyMap();
+				Map<Integer,Boolean> keyboard = keyboardControl.getKeyMap();
 				
 				final int keyCode = e.getKeyCode();
 				if(keyboard.containsKey(keyCode))
@@ -81,15 +77,20 @@ public class Window extends JFrame
 			@Override
 			public void keyTyped(KeyEvent e){}
 		});
+		
+		this.manager = new PanelManager(this,width,height);
 	}
 	
-	public GamePanel getMainPanel()
+	public void updateState(float deltaTime)
 	{
-		return this.panel;
+		if(this.manager.shouldWindowClose())
+			this.dispose();
+		
+		this.manager.update(deltaTime,this.keyboardControl);
 	}
 	
-	public MenuPanel getMenuPanel()
+	public void draw()
 	{
-		return this.menu;
+		manager.draw();
 	}
 }

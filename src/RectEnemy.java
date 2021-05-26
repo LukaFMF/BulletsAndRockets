@@ -90,15 +90,8 @@ public class RectEnemy extends Enemy
 		this.hitbox.draw(g);
 	}
 	
-	public boolean IsHit(PlayerBullet bullet) 
+	public RectHitbox getHitbox()
 	{
-		//TODO BULLET DMG
-		return this.hitbox.collidesWith(bullet.getHitbox());
-	}
-	public boolean HasHP() 
-	{
-		if (this.hp > 0)
-			return true;
-		return false;				
+		return this.hitbox;
 	}
 }

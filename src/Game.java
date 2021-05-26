@@ -10,16 +10,18 @@ public class Game
 		final long fps = 60;
 		final long frameDelay = (long)((1/(float)fps)*1e9);
 		long lastFrameTime = System.nanoTime();
-		GamePanel mainPanel = win.getMainPanel();
+		//GamePanel mainPanel = win.getMainPanel();
 		//MenuPanel menuPanel = win.getMenuPanel();
 		while(true)
 		{
 			final long startOfFrame = System.nanoTime();
 			// draw here
-			mainPanel.updateState((float)((startOfFrame - lastFrameTime)/1e6));
-			mainPanel.repaint();
+//			mainPanel.updateState((float)((startOfFrame - lastFrameTime)/1e6));
+//			mainPanel.repaint();
 //			menuPanel.updateState((float)((startOfFrame - lastFrameTime)/1e6));
 //			menuPanel.repaint();
+			win.updateState((float)((startOfFrame - lastFrameTime)/1e6));
+			win.draw();
 			
 			final long endOfFrame = System.nanoTime();
 			final long delayThisFrame = Math.max(frameDelay - (endOfFrame - startOfFrame),0l);

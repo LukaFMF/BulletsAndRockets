@@ -6,6 +6,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+final class ShipThrusterState // simulacija enum konstrukta
+{
+	public static final int DECELERATING  = 0;
+	public static final int STATIONARY = 1;
+	public static final int ACCELERATING = 2;
+}
+
 public class Player
 {
 	private int panelWidth; // le za informacijo o velikosti okna
@@ -13,6 +20,9 @@ public class Player
 	private Rect2D rect;
 	private float pixelsPerMilli; // speed
 	private Vec2D movementDirection;
+	private int thrusterState;
+	private Image thrusterStationary;
+	private Image thrusterAccelerating;
 	private int collisionGridInx;
 	private Set<Integer> neighbouringCellInxs;
 	private CollisionGrid grid;
@@ -38,6 +48,7 @@ public class Player
 		
 		this.weapon = new PlayerWeapon();
 		
+		this.thrusterState = ShipThrusterState.STATIONARY;
 		this.movementDirection = new Vec2D(0.f,0.f);
 		
 		final Vec2D rOrigin = this.rect.getOrigin();
@@ -57,7 +68,7 @@ public class Player
 		this.collisionGridInx = this.hitbox.getCollisionGridInx(this.grid);
 		this.updateNeighbouringCells();
 		
-		this.lives = 3;
+		this.lives = 1;//3;
 		this.isInvincible = false;
 		this.isDestroyed = false;
 		this.destroyedAt = 0.;
@@ -65,6 +76,8 @@ public class Player
 		
 		try
 		{
+			this.thrusterStationary = Loader.loadImage(".\\assets\\images\\thrusterSta.png",21,30);
+			this.thrusterAccelerating = Loader.loadImage(".\\assets\\images\\thrusterAcc.png",32,30);
 			this.texture = Loader.loadImage(".\\assets\\images\\ship.png",(int)this.rect.getWidth(),(int)this.rect.getHeight());
 		}
 		catch(IOException e)
@@ -73,7 +86,7 @@ public class Player
 		}
 	}
 	
-	public void update(double timer,float deltaTime,KeyboardControls keyboard)
+	public void update(double timer,float deltaTime,KeyboardControl keyboard)
 	{
 		for(int i = 0;i < this.bullets.size();)
 		{
@@ -99,7 +112,7 @@ public class Player
 		
 		if(this.isDestroyed)
 		{
-			if(timer - this.destroyedAt > 2000.f) // ladje ni za 2 sec
+			if(this.hasLivesLeft() && timer - this.destroyedAt > 2000.f) // ladje ni za 2 sec in prikazala se bo spet le, ce ima igralec se kaj zivljenj
 			{
 				this.isDestroyed = false;
 				this.isInvincible = true;
@@ -124,6 +137,12 @@ public class Player
 			
 			if(!this.movementDirection.isZeroVec())
 			{
+				final float xDirection = this.movementDirection.getX();
+				if(xDirection == 0.f)
+					this.thrusterState = ShipThrusterState.STATIONARY;  
+				else 
+					this.thrusterState = xDirection > 0.f ? ShipThrusterState.ACCELERATING : ShipThrusterState.DECELERATING;
+				
 				this.movementDirection.normalize();
 				
 				final float moveAmount = deltaTime * this.pixelsPerMilli;
@@ -168,7 +187,10 @@ public class Player
 					this.collisionGridInx = this.hitbox.getCollisionGridInx(this.grid);
 					this.updateNeighbouringCells();
 				}
+					
 			}
+			else
+				this.thrusterState = ShipThrusterState.STATIONARY;
 		}
 	}
 	
@@ -178,8 +200,22 @@ public class Player
 			bullet.draw(g);
 		
 		if(this.isInvincible)
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,.5f));
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,.4f));
+		
 		final Vec2D imagePos = rect.getOrigin();
+		switch(this.thrusterState)
+		{
+			case ShipThrusterState.STATIONARY:
+			{
+				g.drawImage(this.thrusterStationary,(int)imagePos.getX() - 21,(int)imagePos.getY() + 75 - 15,null);
+				break;
+			}
+			case ShipThrusterState.ACCELERATING:
+			{
+				g.drawImage(this.thrusterAccelerating,(int)imagePos.getX() - 32,(int)imagePos.getY() + 75 - 15,null);
+				break;
+			}
+		}
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.f));
 		this.hitbox.draw(g);
@@ -195,11 +231,11 @@ public class Player
 		final boolean inLeftmostColumn = this.collisionGridInx % gridSize == 0;
 		final boolean inRightmostColumn = this.collisionGridInx % gridSize == gridSize - 1;
 		final boolean inUpmostRow = this.collisionGridInx / gridSize == 0;
-		final boolean inLowestRow = this.collisionGridInx % gridSize == gridSize - 1;
+		final boolean inLowestRow = this.collisionGridInx / gridSize == gridSize - 1;
 		
 		if(!inLeftmostColumn) // je v prvem stolpcu
 			this.neighbouringCellInxs.add(this.collisionGridInx - 1);
-		else if(!inRightmostColumn) // je v zadnjem stolpcu
+		if(!inRightmostColumn) // je v zadnjem stolpcu
 			this.neighbouringCellInxs.add(this.collisionGridInx + 1);
 		
 		if(!inUpmostRow) // je v prvi vrstici
@@ -211,7 +247,7 @@ public class Player
 			if(!inRightmostColumn)
 				this.neighbouringCellInxs.add(this.collisionGridInx - gridSize + 1);
 		}
-		else if(!inLowestRow) // je v zadnji vrstici
+		if(!inLowestRow) // je v zadnji vrstici
 		{
 			this.neighbouringCellInxs.add(this.collisionGridInx + gridSize);
 			
@@ -222,16 +258,11 @@ public class Player
 		}
 	}
 	
-	public void destroy(double timer,TextRenderer textRenderer)
+	public void destroy(double timer)
 	{
 		this.isDestroyed = true;
 		this.destroyedAt = timer;
 		this.lives--;
-		
-		if(this.lives == 0)
-		{
-			textRenderer.add(new Text("GAME OVER",new Vec2D(337,410),100,5000.f,Color.RED));
-		}
 	}
 	
 	public boolean isDestroyed()
@@ -273,5 +304,9 @@ public class Player
 		return this.isInvincible;
 	}
 	
+	public boolean hasLivesLeft()
+	{
+		return this.lives > 0;
+	}
 
 }

@@ -2,11 +2,11 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeyboardControls
+public class KeyboardControl
 {
 	private Map<Integer,Boolean> keyMap;
 	
-	KeyboardControls()
+	KeyboardControl()
 	{
 		keyMap = new HashMap<Integer,Boolean>();
 		

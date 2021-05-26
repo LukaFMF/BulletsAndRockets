@@ -39,7 +39,7 @@ public class CircleEnemy extends Enemy
 		 
 		if(this.isIdle)
 		{
-			final Vec2D currTarget = new Vec2D(0.f,(float)(Math.sin(timer/1e3) * this.pixelsPerMilli));
+			final Vec2D currTarget = new Vec2D(0.f,(float)(Math.sin(timer/1e3) * this.pixelsPerMilli)); // use already defined variable!
 			this.enemy.translate(currTarget);
 			this.hitbox.translate(currTarget);
 		}
@@ -90,5 +90,10 @@ public class CircleEnemy extends Enemy
 		final Vec2D imagePos = this.enemy.getOrigin();
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		this.hitbox.draw(g);
+	}
+	
+	public CircleHitbox getHitbox()
+	{
+		return this.hitbox;
 	}
 }

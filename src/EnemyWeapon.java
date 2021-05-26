@@ -17,7 +17,7 @@ public class EnemyWeapon
 	{
 		if(timer - lastShotAt > shootCooldown)
 		{
-			this.pattern.formation(timer,location,enemyBullets,target);
+			this.pattern.formation(timer,location,enemyBullets,target); // remove timer
 			this.lastShotAt = timer;
 		}
 	}
