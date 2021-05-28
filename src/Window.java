@@ -11,8 +11,6 @@ import java.awt.*;
 
 public class Window extends JFrame
 {
-//	private MenuPanel menu;
-//	private GamePanel panel;
 	private KeyboardControl keyboardControl;
 	private PanelManager manager;
 	Window(String name,int width,int height)
@@ -22,6 +20,7 @@ public class Window extends JFrame
 		this.setSize(width,height);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
+		this.setFocusTraversalKeysEnabled(false); // da program lahko zajame TAB tipko
 		
 		try
 		{

@@ -135,6 +135,8 @@ public class Player
 				this.movementDirection.translate(-1.f,.0f);
 			if(keyMap.get(KeyEvent.VK_RIGHT))
 				this.movementDirection.translate(1.f,.0f);
+			if(keyMap.get(KeyEvent.VK_TAB))
+				this.weapon.switchWeapon(timer);
 			if(keyMap.get(KeyEvent.VK_SPACE))
 				this.weapon.tryToShoot(this.rect,timer,this.bullets);
 			if(keyMap.get(KeyEvent.VK_SHIFT))

@@ -13,18 +13,16 @@ final class WepType // simulacija enum konstrukta
 
 public class PlayerWeapon
 {
-//	static final int bullX = 35; // TODO zbrisi pol 
-//	static final int bullY = 15; // zbrisi pol
-//	static final Vec2D bullSpd = new Vec2D(1.5f,0.f); // zbrisi pol
-//	static final float shootCooldown = 250.f; // zbrisi pol
-	
+
 	private double lastShotAt;
+	private double lastSwitchedAt;
 	private int currWeaponType;
 	private WeaponType[] wepaonTypes;
 	
 	PlayerWeapon(Rect2D shipBoundingBox)
 	{
 		this.lastShotAt = 0.;
+		this.lastSwitchedAt= 0.;
 		this.currWeaponType = WepType.BULLETS;
 		
 		final float shipWidth = shipBoundingBox.getWidth();
@@ -92,6 +90,17 @@ public class PlayerWeapon
 				bullets.add(new PlayerBullet(new Rect2D(bulletOrigin,bulletWidth,bulletHeight),speed,acceleration,damage,bulletTexture));
 			}
 			this.lastShotAt = timer;
+		}
+	}
+	
+	public void switchWeapon(double timer)
+	{
+		if(timer - this.lastSwitchedAt > 1500.f) // igralec lahko spremeni orozje le vsake 1.5s
+		{
+			this.currWeaponType++;
+			if(this.currWeaponType == this.wepaonTypes.length)
+				this.currWeaponType = 0;
+			this.lastSwitchedAt = timer;
 		}
 	}
 	
