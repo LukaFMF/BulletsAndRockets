@@ -24,3 +24,9 @@ izhaja iz igre **Space Impact**.
 # Člani razvojne ekipe
 - Luka Toplak
 - Anže Ozimek
+
+# Upravljanje ladje
+- premikanje: gumbi s puščicami,
+- streljanje: presledek,
+- menjanje orožij: tabulator,
+- pocasnejše premikanje: shift.
