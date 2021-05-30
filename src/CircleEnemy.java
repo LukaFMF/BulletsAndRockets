@@ -5,22 +5,22 @@ public class CircleEnemy extends Enemy
 {
 	private CircleHitbox hitbox;
 	
-	CircleEnemy(float movespeed,int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying,EnemyWeapon enemyWeapon)
+	CircleEnemy(EnemyType enemyType,Vec2D spawnPoint,Vec2D[] waypoints,boolean repeatWaypoints)
 	{
-		super(movespeed,hp,texture,enemy,waypoints,isCyclying,enemyWeapon);
+		super(enemyType,spawnPoint,waypoints,repeatWaypoints);
 		
-		Vec2D newOrigin = this.enemy.getOrigin().clone();
-		newOrigin.translate(this.enemy.getWidth()/2,this.enemy.getHeight()/2);
-		this.hitbox = new CircleHitbox(newOrigin,this.enemy.getWidth()/2);
+		Vec2D newOrigin = this.boundingBox.getOrigin().clone();
+		newOrigin.translate(this.boundingBox.getWidth()/2,this.boundingBox.getHeight()/2);
+		this.hitbox = new CircleHitbox(newOrigin,this.boundingBox.getWidth()/2);
 	}
 	
 	public float getOriginX() 
 	{
-		return this.enemy.getOrigin().getX();
+		return this.boundingBox.getOrigin().getX();
 	}
 	public float getOriginY() 
 	{
-		return this.enemy.getOrigin().getY();
+		return this.boundingBox.getOrigin().getY();
 	}
 
 	@Override
@@ -35,22 +35,22 @@ public class CircleEnemy extends Enemy
 			}
 		}
 		
-		this.enemyWeapon.update(timer,this.enemy,enemyBullets,target);
+		this.enemyWeapon.update(timer,this.boundingBox,enemyBullets,target);
 		 
 		if(this.isIdle)
 		{
 			final Vec2D currTarget = new Vec2D(0.f,(float)(Math.sin(timer/1e3) * this.pixelsPerMilli)); // use already defined variable!
-			this.enemy.translate(currTarget);
+			this.boundingBox.translate(currTarget);
 			this.hitbox.translate(currTarget);
 		}
 		else
 		{
-			final Vec2D origin = this.enemy.getOrigin();
+			final Vec2D origin = this.boundingBox.getOrigin();
 			
 			final float currX = origin.getX();
 			final float currY = origin.getY();
 			
-			if(this.waypoints[this.currWaypointInx].isWithinError(origin,3.f))
+			if(this.waypoints[this.currWaypointInx].isWithinError(origin,5.f))
 			{
 				this.currWaypointInx++;
 				if(this.currWaypointInx == this.waypoints.length)
@@ -77,7 +77,7 @@ public class CircleEnemy extends Enemy
 				final float moveAmount = deltaTime * this.pixelsPerMilli;
 				this.movementDirection.scalarMul(moveAmount);
 				
-				this.enemy.translate(this.movementDirection);
+				this.boundingBox.translate(this.movementDirection);
 				this.hitbox.translate(this.movementDirection);
 			}
 		}
@@ -87,7 +87,7 @@ public class CircleEnemy extends Enemy
 	@Override
 	public void draw(Graphics2D g)
 	{
-		final Vec2D imagePos = this.enemy.getOrigin();
+		final Vec2D imagePos = this.boundingBox.getOrigin();
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		this.hitbox.draw(g);
 	}

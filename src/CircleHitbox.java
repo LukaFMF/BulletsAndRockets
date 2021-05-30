@@ -49,6 +49,11 @@ public class CircleHitbox
 		return this.hitbox;
 	}
 	
+	public CircleHitbox clone()
+	{
+		return new CircleHitbox(this.hitbox.getOrigin(),this.hitbox.getRadius());
+	}
+	
 	public Vec2D getHitboxOrigin()
 	{
 		return this.hitbox.getOrigin();

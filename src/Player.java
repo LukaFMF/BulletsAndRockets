@@ -33,6 +33,7 @@ public class Player
 	private Image texture;
 	private LinkedList<PlayerBullet> bullets;
 	private int lives;
+	private Image lifeTexture;
 	private boolean isInvincible;
 	private double invincibleAt;
 	private boolean isDestroyed;
@@ -81,6 +82,7 @@ public class Player
 			this.thrusterStationary = Loader.loadImage(".\\assets\\images\\thrusterSta.png",21,30);
 			this.thrusterAccelerating = Loader.loadImage(".\\assets\\images\\thrusterAcc.png",32,30);
 			this.texture = Loader.loadImage(".\\assets\\images\\ship.png",(int)this.rect.getWidth(),(int)this.rect.getHeight());
+			this.lifeTexture = Loader.loadImage(".\\assets\\images\\playerLife.png",50,50);
 		}
 		catch(IOException e)
 		{
@@ -203,9 +205,6 @@ public class Player
 	
 	public void draw(Graphics2D g)
 	{
-		for(PlayerBullet bullet : this.bullets)
-			bullet.draw(g);
-		
 		if(this.isInvincible)
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,.4f));
 		
@@ -226,7 +225,21 @@ public class Player
 		this.weapon.draw(g,this.rect.getOrigin());
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.f));
+		
+			
 		this.hitbox.draw(g);
+	}
+	
+	public void drawPlayerLives(Graphics2D g)
+	{
+		for(int i = 0;i < this.lives;i++)
+			g.drawImage(this.lifeTexture,i*50,0, null);
+	}
+	
+	public void drawPlayerBullets(Graphics2D g)
+	{
+		for(PlayerBullet bullet : this.bullets)
+			bullet.draw(g);
 	}
 	
 	public void updateNeighbouringCells()

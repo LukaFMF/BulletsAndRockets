@@ -13,7 +13,7 @@ public class EnemyType
 	private float shootCooldown;
 	private BulletPattern pattern;
 	
-	EnemyType(int id,float width,float height,boolean circleHitbox,float speed,int hp,String pathToFile,float shootCooldown,BulletPattern pattern) throws Exception
+	EnemyType(int id,int hp,float width,float height,float speed,boolean circleHitbox,String pathToFile,float shootCooldown,BulletPattern pattern) throws Exception
 	{
 		this.id = id;
 		this.boundingBoxWidth = width; 

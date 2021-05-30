@@ -4,15 +4,13 @@ public class PlayerBullet extends Projectile
 {
 	private RectHitbox hitbox;
 	private int damage;
-	private Vec2D acceleration;
 	
 	PlayerBullet(Rect2D rect,Vec2D speed,Vec2D acceleration,int damage,Image texture)
 	{
-		super(rect,speed,texture);
-		this.hitbox = new RectHitbox(this.rect.getOrigin(),this.rect.getWidth(),this.rect.getHeight());
+		super(rect,speed,acceleration,texture);
 		this.damage = damage;
+		this.hitbox = new RectHitbox(this.rect.getOrigin(),this.rect.getWidth(),this.rect.getHeight());
 		this.isDestroyed = false;
-		this.acceleration = acceleration; 
 	}
 	
 	@Override
@@ -21,7 +19,9 @@ public class PlayerBullet extends Projectile
 		if(this.isOffscreen(windowWidth,windowHeight))
 			this.destroy();
 		
-		this.speed.add(this.acceleration);
+		Vec2D accelerationAmount = this.acceleration.clone();
+		accelerationAmount.scalarMul(deltaTime);
+		this.speed.add(accelerationAmount);
 		
 		Vec2D movementAmount = this.speed.clone();
 		movementAmount.scalarMul(deltaTime);

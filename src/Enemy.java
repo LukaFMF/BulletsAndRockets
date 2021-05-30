@@ -1,32 +1,31 @@
 
 import java.awt.*;
 import java.util.LinkedList;
-import java.util.List;
 
 public abstract class Enemy
 {
-	protected Rect2D enemy;
+	protected int hp;
+	protected Rect2D boundingBox;
 	protected float pixelsPerMilli;
 	protected Vec2D movementDirection;
-	protected int hp;
-	protected Image texture;
 	protected int currWaypointInx;
 	protected Vec2D[] waypoints;
-	protected boolean repeatWaypoints;
+	protected Image texture;
 	protected EnemyWeapon enemyWeapon;
+	protected boolean repeatWaypoints;
 	protected boolean isIdle;
 	
-	Enemy(float pixelsPerMilli,int hp,Image texture,Rect2D enemy,Vec2D[] waypoints,boolean isCyclying,EnemyWeapon enemyWeapon)
+	Enemy(EnemyType enemyType,Vec2D spawnPoint,Vec2D[] waypoints,boolean repeatWaypoints)
 	{
-		this.pixelsPerMilli = pixelsPerMilli;
-		this.hp = hp;
+		this.hp = enemyType.getHp();
+		this.boundingBox = new Rect2D(spawnPoint.getX(),spawnPoint.getY(),enemyType.getBoundingBoxWidth(),enemyType.getBoundingBoxHeight());
+		this.pixelsPerMilli = enemyType.getSpeed();
 		this.movementDirection = new Vec2D(0.f,0.f);
-		this.texture = texture;
-		this.enemy = enemy;
 		this.currWaypointInx = 0;
 		this.waypoints = waypoints;
-		this.repeatWaypoints = isCyclying;
-		this.enemyWeapon = enemyWeapon;
+		this.texture = enemyType.getTexture();
+		this.enemyWeapon = new EnemyWeapon(enemyType.getShootCooldown(),enemyType.getPattern());
+		this.repeatWaypoints = repeatWaypoints;
 		this.isIdle = false;
 	}
 	

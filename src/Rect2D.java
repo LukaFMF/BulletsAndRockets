@@ -37,7 +37,7 @@ public class Rect2D extends Shape2D
 	
 	public Rect2D clone()
 	{
-		return new Rect2D(this.origin,this.width,this.height);
+		return new Rect2D(this.origin.clone(),this.width,this.height);
 	}
 }
 

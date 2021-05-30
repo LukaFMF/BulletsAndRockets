@@ -77,28 +77,33 @@ public class Level
 		return this.spawns;
 	}
 	
-	void update(double timer,LinkedList<CircleEnemy> circleEnemies,LinkedList<RectEnemy> rectEnemies,EnemyType[] enemyTypes) // modifies enemy lists
+	void update(double timer,LinkedList<CircleEnemy> circleEnemies,LinkedList<RectEnemy> rectEnemies,LinkedList<Boss> bosses,EnemyType[] enemyTypes,BossType[] bossTypes) // modifies enemy lists
 	{
 		if(this.currentInx < this.spawnTimes.length && timer > this.spawnTimes[this.currentInx])
 		{
 			Vector<EnemySpawn> enemiesToSpawn = spawns[this.currentInx];
 			for(EnemySpawn enemyToSpawn : enemiesToSpawn)
 			{
-				EnemyType currEnemyType = enemyTypes[enemyToSpawn.getId()];
-				
-				final int hp = currEnemyType.getHp();
-				final float pixelsPerMilli = currEnemyType.getSpeed();
-				final Image texture = currEnemyType.getTexture();
-				final Rect2D boundingBox = new Rect2D(enemyToSpawn.getSpawnPoint(),currEnemyType.getBoundingBoxWidth(),currEnemyType.getBoundingBoxHeight());
-				final boolean repeatedWaypoints = enemyToSpawn.hasRepeatingWaypoints();
+				int enemyId = enemyToSpawn.getId();
+				final int numDifferentEnemies = enemyTypes.length; 
+		
+				final Vec2D spawnPoint = enemyToSpawn.getSpawnPoint();
 				final Vec2D[] waypoints = enemyToSpawn.getWaypoints();
-				final float shootCooldown = currEnemyType.getShootCooldown();
-				final BulletPattern pattern = currEnemyType.getPattern();
 				
-				if(currEnemyType.hasCircleHitbox())
-					circleEnemies.add(new CircleEnemy(pixelsPerMilli,hp,texture,boundingBox,waypoints,repeatedWaypoints,new EnemyWeapon(shootCooldown,pattern)));
-				else
-					rectEnemies.add(new RectEnemy(pixelsPerMilli,hp,texture,boundingBox,waypoints,repeatedWaypoints,new EnemyWeapon(shootCooldown,pattern)));
+				if(enemyId < numDifferentEnemies) // vemo da moramo priklicati navadnega nasprotnika
+				{
+					final EnemyType currEnemyType = enemyTypes[enemyId];
+					final boolean repeatedWaypoints = enemyToSpawn.hasRepeatingWaypoints();
+					if(currEnemyType.hasCircleHitbox())
+						circleEnemies.add(new CircleEnemy(currEnemyType,spawnPoint,waypoints,repeatedWaypoints));
+					else
+						rectEnemies.add(new RectEnemy(currEnemyType,spawnPoint,waypoints,repeatedWaypoints));
+				}
+				else // moramo priklicati "boss"-a
+				{
+					enemyId -= numDifferentEnemies;
+					bosses.add(new Boss(bossTypes[enemyId],enemyToSpawn.getSpawnPoint(),enemyToSpawn.getWaypoints()));
+				}
 			}
 			this.currentInx++;
 		}

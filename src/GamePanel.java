@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 public class GamePanel extends JPanel
@@ -19,8 +20,10 @@ public class GamePanel extends JPanel
 	private CollisionGrid grid;
 	private LinkedList<CircleEnemy> circleEnemies;
 	private LinkedList<RectEnemy> rectEnemies;
+	private LinkedList<Boss> bosses;
 	private LinkedList<EnemyBullet> enemyBullets;
 	private EnemyType[] enemyTypes;
+	private BossType[] bossTypes;
 	private int currLevel;
 	private Level[] levels;
 	private Image[] levelTexts;
@@ -64,13 +67,14 @@ public class GamePanel extends JPanel
 		this.player = new Player(new Rect2D(150.f,this.panelHeight/2 - 75.f,100.f,150.f),this.panelWidth,this.panelHeight,this.grid);
 		
 		this.background = new Background[] {
-				new Background(".\\assets\\images\\background.png",this.panelWidth,this.panelHeight),
-				new Background(".\\assets\\images\\background.png",this.panelWidth,this.panelHeight), //TODO change background textures
-				new Background(".\\assets\\images\\background.png",this.panelWidth,this.panelHeight)  //TODO change background textures
+			new Background(".\\assets\\images\\backgroundLvl1.png",this.panelWidth,this.panelHeight),
+			new Background(".\\assets\\images\\backgroundLvl2.png",this.panelWidth,this.panelHeight),
+			new Background(".\\assets\\images\\backgroundLvl3.png",this.panelWidth,this.panelHeight) 
 		};
 		
 		this.circleEnemies = new LinkedList<CircleEnemy>();
 		this.rectEnemies = new LinkedList<RectEnemy>();
+		this.bosses = new LinkedList<Boss>();
 		this.enemyBullets = new LinkedList<EnemyBullet>();
 	
 		this.gameOverButtonsEnabled = false;
@@ -123,9 +127,9 @@ public class GamePanel extends JPanel
 		
 		this.levelBannerShown = false;
 		this.levelTextsRelativeLocations = new Vec2D[]{
-				new Vec2D(this.messagePanelBoundingBox.getWidth()/2 - 68f,55.f),
-				new Vec2D(this.messagePanelBoundingBox.getWidth()/2 - 72f,55.f),
-				new Vec2D(this.messagePanelBoundingBox.getWidth()/2 - 71f,55.f)
+			new Vec2D(this.messagePanelBoundingBox.getWidth()/2 - 68f,55.f),
+			new Vec2D(this.messagePanelBoundingBox.getWidth()/2 - 72f,55.f),
+			new Vec2D(this.messagePanelBoundingBox.getWidth()/2 - 71f,55.f)
 		};
 		
 		
@@ -135,36 +139,374 @@ public class GamePanel extends JPanel
 		{
 			Image enemyBulletTexture = Loader.loadImage(".\\assets\\images\\enemyBullet.png",30,30);
 			this.enemyTypes = new EnemyType[] {
-				new EnemyType(0,100.f,100.f,true,.3f,7,".\\assets\\images\\enemy0.png",1500.f,
+				new EnemyType(0,7,100.f,100.f,.3f,true,".\\assets\\images\\enemy0.png",1500.f,
+					(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+					{
+						final Vec2D enemyOrigin = location.getOrigin();
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() + 10.f,enemyOrigin.getY() + 50.f - 15.f,30.f,30.f),new Vec2D(-.7f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+					}),
+				new EnemyType(1,25,150.f,150.f,.15f,true,".\\assets\\images\\enemy1.png",3000.f,
+					(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+					{
+						final Vec2D enemyOrigin = location.getOrigin();
+						final float enemyWidth = location.getWidth();
+						final float enemyHeight = location.getHeight();
+						
+						final Rect2D bulletBoundingBox = new Rect2D(enemyOrigin.getX() + enemyWidth/2 - 15.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f);
+						
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(.0f,1.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(.7071f,.7071f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(1.f,.0f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(.7071f,-.7071f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(.0f,-1.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(-.7071f,-.7071f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(-1.f,.0f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(bulletBoundingBox.clone(),new Vec2D(-.7071f,.7071f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));					
+					}),
+				new EnemyType(2,20,250.f,250.f,.25f,true,".\\assets\\images\\enemy2.png",1500.f,
+					(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+					{
+						final Vec2D enemyOrigin = location.getOrigin();
+						final float enemyOriginX = enemyOrigin.getX();
+						final float enemyOriginY = enemyOrigin.getY();
+					
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 90.f - 15.f,enemyOriginY + 30.f - 15.f,30.f,30.f),new Vec2D(-.4f,-.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 80.f - 15.f,enemyOriginY + 70.f - 15.f,30.f,30.f),new Vec2D(-.5f,-.01f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 80.f - 15.f,enemyOriginY + 180.f - 15.f,30.f,30.f),new Vec2D(-.5f,.01f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 90.f - 15.f,enemyOriginY + 220.f - 15.f,30.f,30.f),new Vec2D(-.4f,.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+					}),
+				new EnemyType(3,15,150.f,150.f,.4f,true,".\\assets\\images\\enemy3.png",3500.f,
+					(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+					{
+						final Vec2D enemyOrigin = location.getOrigin();
+						final float enemyWidth = location.getWidth();
+						final float enemyHeight = location.getHeight();
+						final float enemyOriginX = enemyOrigin.getX();
+						final float enemyOriginY = enemyOrigin.getY();
+						final Vec2D enemyCenter = new Vec2D(enemyOriginX + enemyWidth/2,enemyOriginY + enemyHeight/2);
+						
+						Vec2D targetDirection = target.clone();
+						targetDirection.sub(enemyCenter);
+						targetDirection.normalize();
+						targetDirection.scalarMul(.5f);
+						
+						// metek na sredini
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 75.f - 15.f,enemyOriginY + 75.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						
+						// pravokotni metki
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 75.f - 15.f,enemyOriginY + 12.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 75.f - 15.f,enemyOriginY + 138.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 12.f - 15.f,enemyOriginY + 75.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 138.f - 15.f,enemyOriginY + 75.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						
+						// diagonalni metki
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 30.f - 15.f,enemyOriginY + 30.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 30.f - 15.f,enemyOriginY + 120.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 120.f - 15.f,enemyOriginY + 30.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 120.f - 15.f,enemyOriginY + 120.f - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+					}),
+			};
+			
+			final Vec2D boss1HitboxOrigin1 = new Vec2D(160.f,33f);
+			final float boss1HitboxRadius1 = 32.f;
+			final Vec2D boss1HitboxOrigin2 = new Vec2D(160.f,267.f);
+			final float boss1HitboxRadius2 = 32.f;
+			final Vec2D boss1HitboxOrigin3 = new Vec2D(45.f,150.f);
+			final float boss1HitboxRadius3 = 40.f;
+			
+			final Vec2D boss2HitboxOrigin1 = new Vec2D(183.f,52f);
+			final float boss2HitboxRadius1 = 60.f;
+			final Vec2D boss2HitboxOrigin2 = new Vec2D(183.f,498.f);
+			final float boss2HitboxRadius2 = 60.f;
+			final Vec2D boss2HitboxOrigin3 = new Vec2D(95.f,275.f);
+			final float boss2HitboxRadius3 = 95.f;
+			
+			final Vec2D boss3HitboxOrigin1 = new Vec2D(180.f,55f);
+			final float boss3HitboxRadius1 = 32.f;
+			final Vec2D boss3HitboxOrigin2 = new Vec2D(180.f,545.f);
+			final float boss3HitboxRadius2 = 32.f; 
+			final Vec2D boss3HitboxOrigin3 = new Vec2D(150.f,180.f);
+			final float boss3HitboxRadius3 = 40.f;
+			final Vec2D boss3HitboxOrigin4 = new Vec2D(150.f,420.f);
+			final float boss3HitboxRadius4 = 40.f;
+			final Vec2D boss3HitboxOrigin5 = new Vec2D(50.f,300.f);
+			final float boss3HitboxRadius5 = 60.f;
+			
+			this.bossTypes = new BossType[] {
+				new BossType(4,50,250.f,300.f,.5f,
+						new Circle2D[] {
+							new Circle2D(boss1HitboxOrigin1,boss1HitboxRadius1),
+							new Circle2D(boss1HitboxOrigin2,boss1HitboxRadius2),
+							new Circle2D(boss1HitboxOrigin3,boss1HitboxRadius3)
+						},
+						new String[] {
+							".\\assets\\images\\boss1_1.png",
+							".\\assets\\images\\boss1_2.png",
+							".\\assets\\images\\boss1_3.png"
+						},
+						new float[] {
+							1000.f,
+							1000.f,
+							500.f,
+						},
+						new BulletPattern[] {
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 100.f,enemyOriginY + 25.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f,enemyOriginY + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 100.f,enemyOriginY + 245.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+							},
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+							
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 15.f,enemyOriginY + enemyHeight/2 - 60.f,30.f,30.f),new Vec2D(-.4f,-.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f - 15.f,enemyOriginY + enemyHeight/2 - 40.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f - 15.f,enemyOriginY + enemyHeight/2 + 10.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 15.f,enemyOriginY + enemyHeight/2 + 30.f,30.f,30.f),new Vec2D(-.4f,.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							},
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								final Vec2D shotOrigin = new Vec2D(enemyOrigin.getX() + 5.f,enemyOrigin.getY() + 150.f);
+								
+								Vec2D targetDirection = target.clone();
+								targetDirection.sub(shotOrigin);
+								targetDirection.normalize();
+								targetDirection.scalarMul(.75f);
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin.getX() - 15.f,shotOrigin.getY() - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							}
+						},
+						".\\assets\\images\\shield.png",3),
+				
+				new BossType(5,100,300.f,550.f,.2f,
+					new Circle2D[] {
+						new Circle2D(boss2HitboxOrigin1,boss2HitboxRadius1),
+						new Circle2D(boss2HitboxOrigin2,boss2HitboxRadius2),
+						new Circle2D(boss2HitboxOrigin3,boss2HitboxRadius3)
+					},
+					new String[] {
+						".\\assets\\images\\boss2_1.png",
+						".\\assets\\images\\boss2_2.png",
+						".\\assets\\images\\boss2_3.png"
+					},
+					new float[] {
+						1000.f,
+						750.f,
+						100.f,
+					},
+					new BulletPattern[] {
 						(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
 						{
 							final Vec2D enemyOrigin = location.getOrigin();
 							final float enemyWidth = location.getWidth();
 							final float enemyHeight = location.getHeight();
-							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() - 10.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.7f,.0f),enemyBulletTexture,this.grid));
-						}),
+							final float enemyOriginX = enemyOrigin.getX();
+							final float enemyOriginY = enemyOrigin.getY();
+							final Vec2D shotOrigin1 = new Vec2D(enemyOriginX + 165.f,enemyOriginY + 50.f);
+							final Vec2D shotOrigin2 = new Vec2D(enemyOriginX + 165.f,enemyOriginY + 500.f);
+							
+							Vec2D targetDirection1 = target.clone();
+							targetDirection1.sub(shotOrigin1);
+							targetDirection1.normalize();
+							targetDirection1.scalarMul(.5f);
+							
+							Vec2D targetDirection2 = target.clone();
+							targetDirection2.sub(shotOrigin2);
+							targetDirection2.normalize();
+							targetDirection2.scalarMul(.5f);
+							
+							enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin1.getX() - 15.f,shotOrigin1.getY() - 15.f,30.f,30.f),targetDirection1.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin2.getX() - 15.f,shotOrigin2.getY() - 15.f,30.f,30.f),targetDirection2.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						},
+						(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+						{
+							final Vec2D enemyOrigin = location.getOrigin();
+							final float enemyWidth = location.getWidth();
+							final float enemyHeight = location.getHeight();
+							final float enemyOriginX = enemyOrigin.getX();
+							final float enemyOriginY = enemyOrigin.getY();
+						
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 15.f,enemyOriginY + enemyHeight/2 - 60.f,30.f,30.f),new Vec2D(-.4f,-.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f - 15.f,enemyOriginY + enemyHeight/2 - 40.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f - 15.f,enemyOriginY + enemyHeight/2 + 10.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 15.f,enemyOriginY + enemyHeight/2 + 30.f,30.f,30.f),new Vec2D(-.4f,.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+						},
+						(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+						{
+							final Vec2D enemyOrigin = location.getOrigin();
+							final float enemyWidth = location.getWidth();
+							final float enemyHeight = location.getHeight();
+							
+							Random rand = new Random();
+							double yDirection = rand.nextDouble() * .3f ;
+							
+							enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() - 10.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.2f,-.15f + (float)yDirection),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+						}
+					},
+					".\\assets\\images\\shield.png",3),
+				
+				new BossType(6,200,350.f,600.f,.3f,
+						new Circle2D[] {
+							new Circle2D(boss3HitboxOrigin1,boss3HitboxRadius1),
+							new Circle2D(boss3HitboxOrigin2,boss3HitboxRadius2),
+							new Circle2D(boss3HitboxOrigin3,boss3HitboxRadius3),
+							new Circle2D(boss3HitboxOrigin4,boss3HitboxRadius4),
+							new Circle2D(boss3HitboxOrigin5,boss3HitboxRadius5)
+						},
+						new String[] {
+							".\\assets\\images\\boss3_1.png",
+							".\\assets\\images\\boss3_2.png",
+							".\\assets\\images\\boss3_3.png",
+							".\\assets\\images\\boss3_4.png",
+							".\\assets\\images\\boss3_5.png"
+						},
+						new float[] {
+							600.f,
+							1000.f,
+							2000.f,
+							150.f,
+							600.f
+						},
+						new BulletPattern[] {
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 165.f - 15.f,enemyOriginY + 55.f - 15.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 135.f - 15.f,enemyOriginY + 185.f - 15.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 165.f - 15.f,enemyOriginY + 545.f - 15.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 135.f - 15.f,enemyOriginY + 415.f - 15.f,30.f,30.f),new Vec2D(-.5f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+							},
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								final Vec2D shotOrigin1 = new Vec2D(enemyOriginX + 135.f,enemyOriginY + 180.f);
+								final Vec2D shotOrigin2 = new Vec2D(enemyOriginX + 135.f,enemyOriginY + 420.f);
+								final Vec2D shotOrigin3 = new Vec2D(enemyOriginX + 165.f,enemyOriginY + 545.f);
+								
+								Vec2D targetDirection1 = target.clone();
+								targetDirection1.sub(shotOrigin1);
+								targetDirection1.normalize();
+								targetDirection1.scalarMul(.75f);
+								
+								Vec2D targetDirection2 = target.clone();
+								targetDirection2.sub(shotOrigin2);
+								targetDirection2.normalize();
+								targetDirection2.scalarMul(.75f);
+								
+								Vec2D targetDirection3 = target.clone();
+								targetDirection3.sub(shotOrigin3);
+								targetDirection3.normalize();
+								targetDirection3.scalarMul(.75f);
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin1.getX() - 15.f,shotOrigin1.getY() - 15.f,30.f,30.f),targetDirection1.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin2.getX() - 15.f,shotOrigin2.getY() - 15.f,30.f,30.f),targetDirection2.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin3.getX() - 15.f,shotOrigin3.getY() - 15.f,30.f,30.f),targetDirection3.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							},
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 15.f,enemyOriginY + enemyHeight/2 - 60.f,30.f,30.f),new Vec2D(-.4f,-.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f - 15.f,enemyOriginY + enemyHeight/2 - 40.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 10.f - 15.f,enemyOriginY + enemyHeight/2 + 10.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX - 15.f,enemyOriginY + enemyHeight/2 + 30.f,30.f,30.f),new Vec2D(-.4f,.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 120.f - 15.f,enemyOriginY + 185.f - 45.f - 15.f,30.f,30.f),new Vec2D(-.4f,-.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 125.f - 15.f,enemyOriginY + 185.f - 25.f - 15.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 125.f - 15.f,enemyOriginY + 185.f + 25.f - 15.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 120.f - 15.f,enemyOriginY + 185.f + 45.f - 15.f,30.f,30.f),new Vec2D(-.4f,.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 120.f - 15.f,enemyOriginY + 415.f - 45.f - 15.f,30.f,30.f),new Vec2D(-.4f,-.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 125.f - 15.f,enemyOriginY + 415.f - 25.f - 15.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 125.f - 15.f,enemyOriginY + 415.f + 25.f - 15.f,30.f,30.f),new Vec2D(-.5f,0.f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 120.f - 15.f,enemyOriginY + 415.f + 45.f - 15.f,30.f,30.f),new Vec2D(-.4f,.1f),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							},
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								
+								Random rand = new Random();
+								double yDirection1 = rand.nextDouble() * .3f;
+								double yDirection2 = rand.nextDouble() * .2f;
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 5.f - 15.f,enemyOriginY + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.2f,-.15f + (float)yDirection1),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOriginX + 135.f - 15.f,enemyOriginY + 420.f - 15.f,30.f,30.f),new Vec2D(-.2f,-.1f + (float)yDirection2),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+							},
+							(double timer,Rect2D location,LinkedList<EnemyBullet> enemyBullets,Vec2D target) -> 
+							{
+								final Vec2D enemyOrigin = location.getOrigin();
+								final float enemyWidth = location.getWidth();
+								final float enemyHeight = location.getHeight();
+								final float enemyOriginX = enemyOrigin.getX();
+								final float enemyOriginY = enemyOrigin.getY();
+								final Vec2D shotOrigin = new Vec2D(enemyOriginX + 55.f,enemyOriginY + 300.f);
+		
+								Vec2D targetDirection = target.clone();
+								targetDirection.sub(shotOrigin);
+								targetDirection.normalize();
+								targetDirection.scalarMul(.3f);
+								
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() + 20.f - 15.f,enemyOrigin.getY() + enemyHeight/2 - 20.f - 15.f,30.f,30.f),new Vec2D(-.7f,-.12f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() + 5.f - 15.f,enemyOrigin.getY() + enemyHeight/2 - 15.f,30.f,30.f),new Vec2D(-.7f,.0f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(enemyOrigin.getX() + 20.f - 15.f,enemyOrigin.getY() + enemyHeight/2 + 20.f - 15.f,30.f,30.f),new Vec2D(-.7f,.12f),new Vec2D(0.f,0.f),enemyBulletTexture,this.grid));
+								enemyBullets.add(new EnemyBullet(new Rect2D(shotOrigin.getX() - 15.f,shotOrigin.getY() - 15.f,30.f,30.f),targetDirection.clone(),new Vec2D(.0f,.0f),enemyBulletTexture,this.grid));
+							}
+						},
+						".\\assets\\images\\shield.png",5),
 			};
 			
 			this.levels = new Level[] {
-					new Level(".\\assets\\levels\\lvl1.txt"),
-					new Level(".\\assets\\levels\\lvl1.txt"),
-					new Level(".\\assets\\levels\\lvl1.txt")
+				new Level(".\\assets\\levels\\lvl1.txt"),
+				new Level(".\\assets\\levels\\lvl2.txt"),
+				new Level(".\\assets\\levels\\lvl3.txt")
 			};
 			
 			this.messagePanelTexture = Loader.loadImage(".\\assets\\images\\messagePanel.png",(int)this.messagePanelBoundingBox.getWidth(),(int)this.messagePanelBoundingBox.getHeight());
 			this.gameOverTexture = Loader.loadImage(".\\assets\\images\\gameover.png",170,50);
 			this.levelCompletedTexture = Loader.loadImage(".\\assets\\images\\levelComplete.png",170,125);
-			this.levelTexts = new Image[]{
-					Loader.loadImage(".\\assets\\images\\level1.png",136,75),
-					Loader.loadImage(".\\assets\\images\\level2.png",145,75),
-					Loader.loadImage(".\\assets\\images\\level3.png",143,75)
+			this.levelTexts = new Image[] {
+				Loader.loadImage(".\\assets\\images\\level1.png",136,75),
+				Loader.loadImage(".\\assets\\images\\level2.png",145,75),
+				Loader.loadImage(".\\assets\\images\\level3.png",143,75)
 			};
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
 		}
-
 	}
 	
 	public void updateState(float deltaTime,KeyboardControl keyboard) // cas v ms
@@ -179,7 +521,7 @@ public class GamePanel extends JPanel
 		
 		
 		if(this.player.hasLivesLeft())
-			currentLevel.update(this.timer,this.circleEnemies,this.rectEnemies,this.enemyTypes);
+			currentLevel.update(this.timer,this.circleEnemies,this.rectEnemies,this.bosses,this.enemyTypes,this.bossTypes);
 		
 		final Vec2D target = this.player.getAsTarget();
 		for(int i = 0;i < this.circleEnemies.size();)
@@ -187,9 +529,9 @@ public class GamePanel extends JPanel
 			CircleEnemy currEnemy = this.circleEnemies.get(i);
 			
 			final CircleHitbox playerHitbox = this.player.getHitbox();
-			final CircleHitbox enemyBulletHitbox =  currEnemy.getHitbox();
+			final CircleHitbox enemyHitbox = currEnemy.getHitbox();
 			
-			if(!this.player.isDestroyed() && !this.player.isInvincible() && playerHitbox.collidesWith(enemyBulletHitbox))
+			if(!this.player.isDestroyed() && !this.player.isInvincible() && playerHitbox.collidesWith(enemyHitbox))
 				this.player.destroy(this.timer);
 			
 			currEnemy.update(deltaTime,this.timer,this.enemyBullets,target,this.player.getBullets());
@@ -204,14 +546,36 @@ public class GamePanel extends JPanel
 			RectEnemy currEnemy = this.rectEnemies.get(i);
 			
 			final CircleHitbox playerHitbox = this.player.getHitbox();
-			final RectHitbox enemyBulletHitbox =  currEnemy.getHitbox();
+			final RectHitbox enemyHitbox = currEnemy.getHitbox();
 			
-			if(!this.player.isDestroyed() && !this.player.isInvincible() && playerHitbox.collidesWith(enemyBulletHitbox))
+			if(!this.player.isDestroyed() && !this.player.isInvincible() && playerHitbox.collidesWith(enemyHitbox))
 				this.player.destroy(this.timer);
 			
 			currEnemy.update(deltaTime,this.timer,this.enemyBullets,target,this.player.getBullets());
 			if(!currEnemy.isAlive())
 				this.rectEnemies.remove(i);
+			else
+				i++;
+		}
+		
+		for(int i = 0;i < this.bosses.size();)
+		{
+			Boss currEnemy = this.bosses.get(i);
+			
+			final CircleHitbox playerHitbox = this.player.getHitbox();
+			final CircleHitbox[] enemyHitboxes =  currEnemy.getHitboxes();
+			
+			
+			for(int j = currEnemy.getCurrentStage();j < enemyHitboxes.length;j++)
+				if(!this.player.isDestroyed() && !this.player.isInvincible() && playerHitbox.collidesWith(enemyHitboxes[j]))
+				{
+					this.player.destroy(this.timer);
+					break;
+				}
+			
+			currEnemy.update(deltaTime,this.timer,this.enemyBullets,target,this.player.getBullets());
+			if(!currEnemy.isAlive())
+				this.bosses.remove(i);
 			else
 				i++;
 		}
@@ -240,7 +604,7 @@ public class GamePanel extends JPanel
 				i++;
 		}
 		
-		if(currentLevel.haveAllEnemiesBeenSpawned() && this.circleEnemies.size() == 0 && this.rectEnemies.size() == 0)
+		if(currentLevel.haveAllEnemiesBeenSpawned() && this.circleEnemies.size() == 0 && this.rectEnemies.size() == 0 && this.bosses.size() == 0)
 		{
 			this.levelCompleted = true;
 		}
@@ -278,6 +642,7 @@ public class GamePanel extends JPanel
 		
 		this.background[this.currLevel].draw(graphics);
 		//this.grid.draw(graphics,this.player.getNeighbouringCellInxs());
+		this.player.drawPlayerBullets(graphics);
 		if(!this.player.isDestroyed())
 			this.player.draw(graphics);
 		
@@ -287,8 +652,13 @@ public class GamePanel extends JPanel
 		for(RectEnemy rectEnemy : this.rectEnemies)
 			rectEnemy.draw(graphics);
 		
+		for(Boss boss : this.bosses)
+			boss.draw(graphics);
+		
 		for(EnemyBullet enemyBullet : this.enemyBullets)
 			enemyBullet.draw(graphics);
+		
+		this.player.drawPlayerLives(graphics);
 		
 		if(this.timer - this.levelBannerShownSince < 3000.f)
 		{
@@ -323,6 +693,8 @@ public class GamePanel extends JPanel
 			graphics.drawImage(this.messagePanelTexture,(int)massagePanelOrigin.getX(),(int)massagePanelOrigin.getY(),null);
 			graphics.drawImage(this.gameOverTexture,(int)(massagePanelOrigin.getX() + this.gameOverRelativeLocation.getX()),(int)(massagePanelOrigin.getY() + this.gameOverRelativeLocation.getY()),null);
 		}
+		
+		
 	}
 	
 	public void enableGameOverButtons()

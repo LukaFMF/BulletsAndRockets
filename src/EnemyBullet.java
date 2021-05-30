@@ -7,9 +7,9 @@ public class EnemyBullet extends Projectile
 	private int collisionGridInx;
 	private CollisionGrid grid;
 	
-	EnemyBullet(Rect2D rect, Vec2D speed, Image texture,CollisionGrid grid)
+	EnemyBullet(Rect2D rect,Vec2D speed,Vec2D acceleration,Image texture,CollisionGrid grid)
 	{
-		super(rect,speed,texture);
+		super(rect,speed,acceleration,texture);
 		
 		final Vec2D origin = this.rect.getOrigin();
 		final float rectX = origin.getX();
@@ -47,12 +47,15 @@ public class EnemyBullet extends Projectile
 		if(this.isOffscreen(windowWidth,windowHeight))
 			this.destroy();
 		
-		Vec2D movement = this.speed.clone();
+		Vec2D accelerationAmount = this.acceleration.clone();
+		accelerationAmount.scalarMul(deltaTime);
+		this.speed.add(accelerationAmount);
 		
-		movement.scalarMul(deltaTime);
+		Vec2D movementAmount = this.speed.clone();
+		movementAmount.scalarMul(deltaTime);
 		
-		this.rect.translate(movement);		// metki se premikajo le premocrtno
-		this.hitbox.translate(movement);
+		this.rect.translate(movementAmount);	// metki se premikajo le premocrtno
+		this.hitbox.translate(movementAmount);
 		
 		this.collisionGridInx = this.hitbox.getCollisionGridInx(this.grid);
 	}

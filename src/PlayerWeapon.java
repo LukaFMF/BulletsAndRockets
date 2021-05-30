@@ -55,7 +55,7 @@ public class PlayerWeapon
 		this.wepaonTypes = new WeaponType[] {
 			new WeaponType(bulletWidth,bulletHeight,new Vec2D(1.2f,.0f),new Vec2D(0.f,0.f),1,150.f,shipBoundingBox,".\\assets\\images\\machinegunWeapon.png",".\\assets\\images\\machinegunBullet.png",machinegunRelativeLocations),
 			new WeaponType(laserWidth,laserHeight,new Vec2D(3.f,.0f),new Vec2D(0.f,0.f),2,250.f,shipBoundingBox,".\\assets\\images\\laserWeapon.png",".\\assets\\images\\laserShot.png",laserRelativeLocations),
-			new WeaponType(rocketWidth,rocketHeight,new Vec2D(0.3f,.0f),new Vec2D(.2f,0.f),3,350.f,shipBoundingBox,".\\assets\\images\\rocketWeapon.png",".\\assets\\images\\rocket.png",rocketsRelativeLocations)
+			new WeaponType(rocketWidth,rocketHeight,new Vec2D(0.3f,.0f),new Vec2D(.01f,0.f),3,350.f,shipBoundingBox,".\\assets\\images\\rocketWeapon.png",".\\assets\\images\\rocket.png",rocketsRelativeLocations)
 		};
 	}
 	
@@ -107,5 +107,6 @@ public class PlayerWeapon
 	public void reset()
 	{
 		this.lastShotAt = 0.;
+		this.lastSwitchedAt = 0.;
 	}
 }

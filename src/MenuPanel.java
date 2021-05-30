@@ -32,7 +32,7 @@ public class MenuPanel extends JPanel
 		
 		this.timer = 0.;
 		
-		this.background = new Background(".\\assets\\images\\background.png",this.panelWidth,this.panelHeight);
+		this.background = new Background(".\\assets\\images\\backgroundLvl1.png",this.panelWidth,this.panelHeight);
 
 		this.gameStart = false;
 		this.showHelp = false;
@@ -65,21 +65,21 @@ public class MenuPanel extends JPanel
 		this.add(this.playButton);
 		
 		
-		this.helpButton = new JButton("Help");
-		this.helpButton.setBounds(this.panelWidth/2 - 36,430,72,21);
-		this.helpButton.setFocusable(false);
-		this.helpButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				showHelp = true;
-			}
-		});
-		this.add(this.helpButton);
+//		this.helpButton = new JButton("Help");
+//		this.helpButton.setBounds(this.panelWidth/2 - 36,430,72,21);
+//		this.helpButton.setFocusable(false);
+//		this.helpButton.addActionListener(new ActionListener()
+//		{
+//			@Override
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				showHelp = true;
+//			}
+//		});
+//		this.add(this.helpButton);
 		
 		this.quitButton = new JButton("Quit");
-		this.quitButton.setBounds(this.panelWidth/2 - 36,460,72,21);
+		this.quitButton.setBounds(this.panelWidth/2 - 36,430,72,21);
 		this.quitButton.setFocusable(false);
 		this.quitButton.addActionListener(new ActionListener()
 		{

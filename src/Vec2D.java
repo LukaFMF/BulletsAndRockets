@@ -75,6 +75,12 @@ public class Vec2D
 		this.y += v.getY();
 	}
 	
+	public void sub(Vec2D v)
+	{
+		this.x -= v.getX();
+		this.y -= v.getY();
+	}
+	
 	public Vec2D clone()
 	{
 		return new Vec2D(this.x,this.y);
