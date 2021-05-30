@@ -35,7 +35,7 @@ public class PlayerBullet extends Projectile
 	{
 		final Vec2D imagePos = this.rect.getOrigin();
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
-		this.hitbox.draw(g);
+		//this.hitbox.draw(g);
 	}
 	
 	public boolean isOffscreen(int width,int height)

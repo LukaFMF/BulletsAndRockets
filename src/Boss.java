@@ -158,8 +158,8 @@ public class Boss
 		for(int i = this.currStage + 1;i < this.shields.length;i++)
 			this.shields[i].draw(g);
 		
-		for(int i = 0;i < this.hitboxes.length;i++)
-		this.hitboxes[i].draw(g);
+//		for(int i = 0;i < this.hitboxes.length;i++)
+//			this.hitboxes[i].draw(g);
 	}
 	public int getCurrentStage()
 	{

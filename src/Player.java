@@ -226,8 +226,7 @@ public class Player
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,1.f));
 		
-			
-		this.hitbox.draw(g);
+		//this.hitbox.draw(g);
 	}
 	
 	public void drawPlayerLives(Graphics2D g)

@@ -89,7 +89,7 @@ public class CircleEnemy extends Enemy
 	{
 		final Vec2D imagePos = this.boundingBox.getOrigin();
 		g.drawImage(texture,(int)imagePos.getX(),(int)imagePos.getY(),null);
-		this.hitbox.draw(g);
+		//this.hitbox.draw(g);
 	}
 	
 	public CircleHitbox getHitbox()
