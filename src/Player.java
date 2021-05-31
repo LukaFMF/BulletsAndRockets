@@ -280,6 +280,7 @@ public class Player
 	
 	public void resetAfterLevel()
 	{
+		this.destroyedAt = 0.;
 		this.weapon.reset();
 	}
 	
